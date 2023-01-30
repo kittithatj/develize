@@ -10,6 +10,7 @@ public class DevelizeApplication {
 
         SpringApplication.run(DevelizeApplication.class, args);
         System.out.println("Develize Started!");
+
     }
 
 }
