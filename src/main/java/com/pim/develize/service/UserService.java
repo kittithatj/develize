@@ -16,7 +16,7 @@ public class UserService {
 
     public User createUser(String username, String password, String role) throws BaseException{
         User entity = new User();
-        if (userRepository.findByUsername(username).isPresent()) {
+        if (userRepository.findByUsername(username).isPresent() || password.isBlank() || username.isBlank()){
             throw UserException.registerFailed();
         }else {
             entity.setUsername(username);

@@ -9,4 +9,6 @@ public interface SkillRepository extends CrudRepository<Skill,Long> {
 
     public Optional<Skill> findBySkillName(String name);
 
+    public Optional<Skill> findBySkillType(String TypeName);
+
 }
