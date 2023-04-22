@@ -12,12 +12,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long user_id;
 
-    @Column(name="USERNAME", length=20, nullable=false, unique=true)
+    @Column(name="username", length=20, nullable=false, unique=true)
     private String username;
 
-    @Column(name="PASSWORD", nullable=false)
+    @Column(name="password", nullable=false)
     private String password;
 
-    @Column(name="ROLE", nullable=false)
+    @Column(name="role", nullable=false)
     private String role;
 }
