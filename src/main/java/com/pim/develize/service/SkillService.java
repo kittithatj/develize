@@ -25,7 +25,7 @@ public class SkillService {
             throw SkillException.skillNameBalnk();
         }else {
             skill.setSkillName(skillName);
-            if(skillType.isBlank()){
+            if(skillType == null){
                 skill.setSkillType("ETC.");
             }else {
                 skill.setSkillType(skillType);
