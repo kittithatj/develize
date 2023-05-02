@@ -1,5 +1,6 @@
 package com.pim.develize.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class Skill {
     private String skillType;
 
     @ManyToMany(mappedBy = "skills")
+    @JsonIgnoreProperties("skills")
     private Set<Personnel> personnels;
 
     @ManyToMany(mappedBy = "skillsRequired")

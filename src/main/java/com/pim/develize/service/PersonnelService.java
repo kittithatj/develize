@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -43,5 +44,13 @@ public class PersonnelService {
         }
         entity.setLastUpdate(new Timestamp(System.currentTimeMillis()));
         return personnelRepository.save(entity);
+    }
+
+    public Iterable<Personnel> getAllPersonnel(){
+        return personnelRepository.findAll();
+    }
+
+    public Optional<Personnel> getPersonnelByName(String name){
+        return personnelRepository.findByNameLike(name);
     }
 }
