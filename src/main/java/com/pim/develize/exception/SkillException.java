@@ -6,8 +6,12 @@ public class SkillException extends BaseException{
         super("skill" + code);
     }
 
-    public static SkillException skillNameBalnk() {
+    public static SkillException skillNameBlank() {
         return new SkillException("name.isBlank");
+    }
+
+    public static SkillException NullRequestPost() {
+        return new SkillException("req.null");
     }
 
 }

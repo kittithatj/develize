@@ -27,6 +27,7 @@ public class Skill {
     private Set<Personnel> personnels;
 
     @ManyToMany(mappedBy = "skillsRequired")
+    @JsonIgnoreProperties("skillsRequired")
     private Set<Project> projects;
 
 }

@@ -15,8 +15,8 @@ public class UserApi {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/create")
-    public void createUser() throws BaseException {
+    @GetMapping("/test-create")
+    public void testCreateUser() throws BaseException {
         userService.createUser("test01", "password", "admin");
     }
 

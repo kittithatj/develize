@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -20,4 +22,8 @@ public class User {
 
     @Column(name="role", nullable=false)
     private String role;
+
+    @OneToMany(mappedBy = "assessBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "assessments")
+    private List<JobAssessment> assessments;
 }

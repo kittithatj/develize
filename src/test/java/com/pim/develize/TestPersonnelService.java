@@ -1,18 +1,17 @@
 package com.pim.develize;
 
-import com.pim.develize.entity.Personnel;
 import com.pim.develize.entity.Skill;
 import com.pim.develize.exception.BaseException;
+import com.pim.develize.model.SkillModel;
 import com.pim.develize.repository.PersonnelRepository;
 import com.pim.develize.repository.SkillRepository;
 import com.pim.develize.service.PersonnelService;
 import com.pim.develize.service.SkillService;
+import com.pim.develize.util.Utilities;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 
 
@@ -28,13 +27,18 @@ public class TestPersonnelService {
     @Autowired
     PersonnelRepository personnelRepository;
 
+    @Autowired
+    Utilities util;
+
     @Test
     public void testCreatePersonnel() throws BaseException {
-        skillService.createSkill("Java",null);
-        Optional<Skill> java = skillRepository.findBySkillName("Java");
-        System.out.println(java.get().getSkillName());
-        Set<Skill> javaToSet = java.map(Collections::singleton).orElse(Collections.emptySet());
-        personnelService.createPersonnel(TestData.firstName,TestData.lastName,TestData.email,TestData.phoneNumber,TestData.division,TestData.position,TestData.status,javaToSet);
+        SkillModel java = new SkillModel();
+        java.skillName = "Java";
+        java.skillType = "Programming Language";
+        skillService.createSkill(java);
+        Set<Skill> skills = util.skillToSet(skillRepository.findBySkillName("Java"));
+        System.out.println(skills.toArray().toString());
+        personnelService.createPersonnel(TestData.firstName, TestData.lastName, TestData.email, TestData.phoneNumber, TestData.division, TestData.position, TestData.status, skills);
     }
 
     interface TestData {

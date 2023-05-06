@@ -1,5 +1,6 @@
 package com.pim.develize.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,14 +21,11 @@ public class Project {
     @Column(name = "project_name", nullable = false)
     private String projectName;
 
+    @Column(name = "project_type", nullable = false)
+    private String projectType;
+
     @Column(name = "project_description")
     private String projectDescription;
-
-    @Column(name = "start_date")
-    private Date startDate;
-
-    @Column(name = "end_date")
-    private Date endDate;
 
     @ManyToMany()
     @JoinTable(
@@ -35,6 +33,7 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
+    @JsonIgnoreProperties("projects")
     private Set<Skill> skillsRequired;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)

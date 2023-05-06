@@ -37,8 +37,8 @@ public class Personnel {
     @Column(name = "position")
     private String position;
 
-    @Column(name = "employment_status")
-    private String employmentStatus;
+    @Column(name = "assignment_status")
+    private String AssignmentStatus;
 
     @ManyToMany()
     @JoinTable(
@@ -52,6 +52,10 @@ public class Personnel {
     @OneToMany(mappedBy = "personnel", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "project_histories")
     private List<ProjectHistory> projectHistories;
+
+    @OneToMany(mappedBy = "personnel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "assessments")
+    private List<JobAssessment> assessments;
 
     @Column(name = "last_update")
     private Timestamp lastUpdate;

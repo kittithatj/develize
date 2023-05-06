@@ -36,7 +36,7 @@ public class PersonnelService {
         entity.setPhoneNumber(phoneNumber);
         entity.setDivision(division);
         entity.setPosition(position);
-        entity.setEmploymentStatus(status);
+        entity.setAssignmentStatus(status);
         if (skill == null) {
             entity.setSkills(Collections.<Skill>emptySet());
         } else {
