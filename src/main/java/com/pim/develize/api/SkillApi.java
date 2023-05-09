@@ -30,10 +30,15 @@ public class SkillApi {
         }
     }
 
-
     @GetMapping("/get")
     public ResponseEntity<Set<Skill>> getAllSkills(){
         Set<Skill> response = skillService.getAllSKills();
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteSkill(@PathVariable("id") Long id) throws BaseException{
+        skillService.deleteSkillById(id);
+        return ResponseEntity.ok("Delete Skill id : "+id);
     }
 }

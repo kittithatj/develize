@@ -41,5 +41,9 @@ public class SkillService {
         return skillRepository.findAll();
     }
 
+    public void deleteSkillById(Long id){
+        skillRepository.deleteById(id);
+    }
+
 
 }
