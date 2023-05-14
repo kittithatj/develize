@@ -37,8 +37,8 @@ public class Personnel {
     @Column(name = "position")
     private String position;
 
-    @Column(name = "assignment_status")
-    private String AssignmentStatus;
+    @Column(name = "employment_status")
+    private String employmentStatus;
 
     @ManyToMany()
     @JoinTable(

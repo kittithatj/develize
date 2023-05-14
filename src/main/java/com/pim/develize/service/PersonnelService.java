@@ -2,48 +2,55 @@ package com.pim.develize.service;
 
 import com.pim.develize.entity.Personnel;
 import com.pim.develize.entity.Skill;
+import com.pim.develize.exception.BaseException;
+import com.pim.develize.exception.PersonnelException;
+import com.pim.develize.model.PersonnelModel;
 import com.pim.develize.repository.PersonnelRepository;
+import com.pim.develize.repository.SkillRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PersonnelService {
 
     final
+    SkillRepository skillRepository;
+    final
     PersonnelRepository personnelRepository;
-
-
-    public PersonnelService(PersonnelRepository personnelRepository) {
+    public PersonnelService(PersonnelRepository personnelRepository, SkillRepository skillRepository) {
         this.personnelRepository = personnelRepository;
+        this.skillRepository = skillRepository;
     }
 
-    public Personnel createPersonnel(String fname,
-                                     String lname,
-                                     String email,
-                                     String phoneNumber,
-                                     String division,
-                                     String position,
-                                     String status,
-                                     Set<Skill> skill) {
+
+    public Personnel createPersonnel(PersonnelModel p) {
         Personnel entity = new Personnel();
-        entity.setFirstName(fname);
-        entity.setLastName(lname);
-        entity.setEmail(email);
-        entity.setPhoneNumber(phoneNumber);
-        entity.setDivision(division);
-        entity.setPosition(position);
-        entity.setAssignmentStatus(status);
-        if (skill == null) {
-            entity.setSkills(Collections.<Skill>emptySet());
-        } else {
-            entity.setSkills(skill);
-        }
+        entity.setFirstName(p.firstName);
+        entity.setLastName(p.lastName);
+        entity.setEmail(p.email);
+        entity.setPhoneNumber(p.phoneNumber);
+        entity.setDivision(p.division);
+        entity.setPosition(p.position);
+        entity.setEmploymentStatus(p.employmentStatus);
         entity.setLastUpdate(new Timestamp(System.currentTimeMillis()));
         return personnelRepository.save(entity);
+    }
+
+    public Personnel setPersonnelSkill(Long personnel_id ,List<Long> skill_id) throws BaseException {
+        Optional<Personnel> personnel = personnelRepository.findById(personnel_id);
+        if(!personnel.isPresent()){
+            throw PersonnelException.setSkillFailed();
+        }
+        Set<Skill> skillSet = new HashSet<Skill>();
+        for (Long i:skill_id) {
+            Optional<Skill> skill = skillRepository.findById(i);
+            skillSet.add(skill.get());
+        }
+        personnel.get().setSkills(skillSet);
+        return personnel.get();
     }
 
     public Iterable<Personnel> getAllPersonnel(){

@@ -1,6 +1,7 @@
 package com.pim.develize;
 
 import com.pim.develize.exception.BaseException;
+import com.pim.develize.model.UserModel;
 import com.pim.develize.repository.UserRepository;
 import com.pim.develize.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +19,13 @@ public class TestUserService {
 
     @Test
     void testCreateUser() throws BaseException {
-        userService.createUser("Test02","123456","member");
-        Assertions.assertEquals(userRepository.findByUsername("Test02").get().getPassword(),"123456");
+        UserModel user = new UserModel();
+        user.username = "Thanathorn31";
+        user.firstName = "Thanathorn";
+        user.lastName = "Juengrungruengkit";
+        user.password = "31313131";
+        user.role = "Nayok";
+        userService.createUser(user);
+        Assertions.assertEquals(userRepository.findByUsername("Thanathorn31").get().getPassword(),"31313131");
     }
 }

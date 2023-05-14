@@ -29,7 +29,7 @@ public class SkillService {
         }else {
             skill.setSkillName(s.skillName);
             if(s.skillType == null || s.skillType.isBlank()){
-                skill.setSkillType("ETC.");
+                skill.setSkillType("Others");
             }else {
                 skill.setSkillType(s.skillType);
             }

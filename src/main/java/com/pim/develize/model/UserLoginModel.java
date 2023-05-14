@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SkillModel {
-    public String skillName;
-    public String skillType;
-
+public class UserLoginModel {
+    public String username;
+    public String password;
 }
