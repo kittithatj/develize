@@ -1,5 +1,7 @@
 package com.pim.develize.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,12 +16,14 @@ public class ProjectHistory {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long history_id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "personnel_id")
+    @JsonIgnoreProperties("projectHistories")
     private Personnel personnel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
+    @JsonIgnoreProperties("projectAssignments")
     private Project project;
 
     private String role;

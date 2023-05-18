@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/personnel")
 public class PersonnelApi {
@@ -32,5 +34,15 @@ public class PersonnelApi {
     public ResponseEntity<Personnel> setPersonnelSkill(@RequestBody SetSkillModel s) throws BaseException {
         Personnel response = personnelService.setPersonnelSkill(s.set_id,s.skill_id);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/division/list")
+    public ResponseEntity<List<String>> getDivisionList(){
+        return ResponseEntity.ok(personnelService.getDivisionList());
+    }
+
+    @GetMapping("/position/list")
+    public ResponseEntity<List<String>> getPositionList(){
+        return ResponseEntity.ok(personnelService.getPositionList());
     }
 }

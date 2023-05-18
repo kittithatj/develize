@@ -1,12 +1,14 @@
 package com.pim.develize.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,17 +29,18 @@ public class Project {
     @Column(name = "project_description")
     private String projectDescription;
 
-    @ManyToMany()
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "skills_required",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
     @JsonIgnoreProperties("projects")
-    private Set<Skill> skillsRequired;
+    private Set<Skill> skillsRequired = new HashSet<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "project_assignments")
+    @JsonIgnoreProperties(value = "project")
     private List<ProjectHistory> projectAssignments;
 
     @Column(name = "budget")

@@ -1,5 +1,6 @@
 package com.pim.develize.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +13,9 @@ public class JobAssessment {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long assessment_id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "personnel_id")
+    @JsonIgnoreProperties("assessments")
     private Personnel personnel;
 
     @Column(name = "deliverable_quality", nullable = false)
@@ -36,8 +38,9 @@ public class JobAssessment {
     @Column(name = "job_performance", nullable = false)
     private Double jobPerformance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("assessments")
     private User assessBy;
 
 }

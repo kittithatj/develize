@@ -1,11 +1,13 @@
 package com.pim.develize.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -40,21 +42,23 @@ public class Personnel {
     @Column(name = "employment_status")
     private String employmentStatus;
 
-    @ManyToMany()
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "personnel_skills",
             joinColumns = @JoinColumn(name = "personnel_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
     @JsonIgnoreProperties("personnels")
-    private Set<Skill> skills;
+    private Set<Skill> skills= new HashSet<>();
 
     @OneToMany(mappedBy = "personnel", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "project_histories")
+    @JsonIgnoreProperties(value = "personnel")
     private List<ProjectHistory> projectHistories;
 
     @OneToMany(mappedBy = "personnel", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "assessments")
+    @JsonIgnoreProperties(value = "personnel")
     private List<JobAssessment> assessments;
 
     @Column(name = "last_update")

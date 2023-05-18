@@ -1,5 +1,6 @@
 package com.pim.develize.service;
 
+import com.pim.develize.entity.Personnel;
 import com.pim.develize.entity.Skill;
 import com.pim.develize.entity.User;
 import com.pim.develize.exception.BaseException;
@@ -10,6 +11,7 @@ import com.pim.develize.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -42,7 +44,12 @@ public class SkillService {
     }
 
     public void deleteSkillById(Long id){
-        skillRepository.deleteById(id);
+        Optional<Skill> skill = skillRepository.findById(id);
+
+        for (Personnel p : skill.get().getPersonnels()) {
+            skill.get().removePersonel(p);
+        }
+        skillRepository.delete(skill.get());
     }
 
 

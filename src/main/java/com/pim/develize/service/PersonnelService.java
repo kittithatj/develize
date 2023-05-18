@@ -50,7 +50,15 @@ public class PersonnelService {
             skillSet.add(skill.get());
         }
         personnel.get().setSkills(skillSet);
-        return personnel.get();
+        return personnelRepository.save(personnel.get());
+    }
+
+    public List<String> getDivisionList() {
+        return personnelRepository.findDivisionList();
+    }
+
+    public List<String> getPositionList() {
+        return personnelRepository.findPositionList();
     }
 
     public Iterable<Personnel> getAllPersonnel(){

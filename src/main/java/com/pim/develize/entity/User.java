@@ -1,5 +1,6 @@
 package com.pim.develize.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,5 +32,6 @@ public class User {
 
     @OneToMany(mappedBy = "assessBy", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "assessments")
+    @JsonIgnoreProperties(value = "assessBy")
     private List<JobAssessment> assessments;
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -24,10 +25,15 @@ public class Skill {
 
     @ManyToMany(mappedBy = "skills")
     @JsonIgnoreProperties("skills")
-    private Set<Personnel> personnels;
+    private Set<Personnel> personnels = new HashSet<>();
 
     @ManyToMany(mappedBy = "skillsRequired")
     @JsonIgnoreProperties("skillsRequired")
-    private Set<Project> projects;
+    private Set<Project> projects = new HashSet<>();
+
+    public void removePersonel(Personnel p){
+        this.personnels.remove(p);
+        p.getSkills().remove(this);
+    }
 
 }
