@@ -15,7 +15,8 @@ public class JobAssessment {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "personnel_id")
-    @JsonIgnoreProperties("assessments")
+    @JsonIgnoreProperties({"assessments","skills","projectHistories"})
+
     private Personnel personnel;
 
     @Column(name = "deliverable_quality", nullable = false)
