@@ -65,6 +65,8 @@ public class PersonnelService {
         return personnelRepository.findAll();
     }
 
+    public Optional<Personnel> getPersonnelById(Long id) { return personnelRepository.findById(id);}
+
     public Optional<Personnel> getPersonnelByName(String name){
         return personnelRepository.findByNameLike(name);
     }

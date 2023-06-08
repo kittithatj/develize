@@ -29,6 +29,12 @@ public class PersonnelApi {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Personnel> getPersonnelById(@PathVariable("id") Long id){
+        Personnel response = personnelService.getPersonnelById(id).get();
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<Personnel> createPersonnel(@RequestBody PersonnelModel personnel){
         Personnel response = personnelService.createPersonnel(personnel);
