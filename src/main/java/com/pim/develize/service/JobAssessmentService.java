@@ -3,12 +3,13 @@ package com.pim.develize.service;
 import com.pim.develize.entity.JobAssessment;
 import com.pim.develize.entity.Personnel;
 import com.pim.develize.entity.User;
-import com.pim.develize.model.AssessmentModel;
+import com.pim.develize.model.request.AssessmentModel;
 import com.pim.develize.repository.JobAssessmentRepository;
 import com.pim.develize.repository.PersonnelRepository;
 import com.pim.develize.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class JobAssessmentService {
@@ -32,6 +33,11 @@ public class JobAssessmentService {
         JobAssessment assessment = new JobAssessment();
         Personnel personnel = personnelRepository.findById(m.personnel_id).get();
         User user = userRepository.findById(m.user_id).get();
+
+        Optional<JobAssessment> opt = jobAssessmentRepository.findByAssessByAndPersonnel(user,personnel);
+        if(opt.isPresent()){
+            assessment.setAssessment_id(opt.get().getAssessment_id());
+        }
         assessment.setPersonnel(personnel);
         assessment.setAssessBy(user);
         assessment.setDeliverableQuality(m.deliverableQuality);

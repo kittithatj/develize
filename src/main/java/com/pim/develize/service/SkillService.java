@@ -2,13 +2,10 @@ package com.pim.develize.service;
 
 import com.pim.develize.entity.Personnel;
 import com.pim.develize.entity.Skill;
-import com.pim.develize.entity.User;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.exception.SkillException;
-import com.pim.develize.exception.UserException;
-import com.pim.develize.model.SkillModel;
+import com.pim.develize.model.request.SkillModel;
 import com.pim.develize.repository.SkillRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -43,13 +40,18 @@ public class SkillService {
         return skillRepository.findAll();
     }
 
-    public void deleteSkillById(Long id){
-        Optional<Skill> skill = skillRepository.findById(id);
+    public void deleteSkillById(Long id) throws SkillException {
+        Optional<Skill> opt = skillRepository.findById(id);
 
-        for (Personnel p : skill.get().getPersonnels()) {
-            skill.get().removePersonel(p);
+        if(!opt.isEmpty()) {
+            for (Personnel p : opt.get().getPersonnels()) {
+                opt.get().removePersonel(p);
+            }
+            skillRepository.delete(opt.get());
+        }else{
+            throw SkillException.deleteFailed();
         }
-        skillRepository.delete(skill.get());
+
     }
 
 

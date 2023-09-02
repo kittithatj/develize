@@ -1,4 +1,4 @@
-package com.pim.develize.model;
+package com.pim.develize.model.request;
 
 import com.pim.develize.entity.User;
 

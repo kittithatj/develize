@@ -1,16 +1,17 @@
 package com.pim.develize.api;
 
-import com.pim.develize.entity.Personnel;
 import com.pim.develize.entity.Skill;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.exception.SkillException;
-import com.pim.develize.model.SkillModel;
+import com.pim.develize.model.request.SkillModel;
+import com.pim.develize.model.response.SkillGetResponse;
 import com.pim.develize.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.Set;
 @CrossOrigin("*")
 @RestController
@@ -31,8 +32,18 @@ public class SkillApi {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<Set<Skill>> getAllSkills(){
-        Set<Skill> response = skillService.getAllSKills();
+    public ResponseEntity<Set<SkillGetResponse>> getAllSkills(){
+        Set<Skill> skills = skillService.getAllSKills();
+        Set<SkillGetResponse> response = new HashSet<>();
+
+        for ( Skill s: skills) {
+            SkillGetResponse r = new SkillGetResponse();
+            r.setSkill_id(s.getSkill_id());
+            r.setSkillName(s.getSkillName());
+            r.setSkillType(s.getSkillType());
+            response.add(r);
+        }
+
         return ResponseEntity.ok(response);
     }
 

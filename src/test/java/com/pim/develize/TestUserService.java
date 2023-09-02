@@ -1,7 +1,7 @@
 package com.pim.develize;
 
 import com.pim.develize.exception.BaseException;
-import com.pim.develize.model.UserModel;
+import com.pim.develize.model.request.UserModel;
 import com.pim.develize.repository.UserRepository;
 import com.pim.develize.service.UserService;
 import org.junit.jupiter.api.Assertions;

@@ -29,6 +29,12 @@ public class Project {
     @Column(name = "project_description")
     private String projectDescription;
 
+    @Column(name = "start_date")
+    private Date startDate;
+
+    @Column(name = "end_date")
+    private Date endDate;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "skills_required",

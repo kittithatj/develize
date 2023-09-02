@@ -1,4 +1,4 @@
-package com.pim.develize.model;
+package com.pim.develize.model.request;
 
 public class UserLoginResponseModel {
 
