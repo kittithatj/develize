@@ -11,8 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/skill")
@@ -32,11 +33,11 @@ public class SkillApi {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<Set<SkillGetResponse>> getAllSkills(){
-        Set<Skill> skills = skillService.getAllSKills();
-        Set<SkillGetResponse> response = new HashSet<>();
+    public ResponseEntity<List<SkillGetResponse>> getAllSkills() {
+        List<Skill> skills = skillService.getAllSKills();
+        List<SkillGetResponse> response = new ArrayList<>();
 
-        for ( Skill s: skills) {
+        for (Skill s : skills) {
             SkillGetResponse r = new SkillGetResponse();
             r.setSkill_id(s.getSkill_id());
             r.setSkillName(s.getSkillName());

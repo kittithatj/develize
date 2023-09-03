@@ -8,8 +8,10 @@ import com.pim.develize.model.request.SkillModel;
 import com.pim.develize.repository.SkillRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
 
 @Service
 public class SkillService {
@@ -36,8 +38,8 @@ public class SkillService {
         }
     }
 
-    public Set<Skill> getAllSKills(){
-        return skillRepository.findAll();
+    public List<Skill> getAllSKills(){
+        return skillRepository.findAllByOrderBySkillNameAsc();
     }
 
     public void deleteSkillById(Long id) throws SkillException {
