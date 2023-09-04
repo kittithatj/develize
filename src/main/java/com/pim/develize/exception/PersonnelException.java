@@ -13,4 +13,12 @@ public class PersonnelException extends BaseException{
     public static PersonnelException setSkillFailed() {
         return new PersonnelException(".set.skill.failed");
     }
+
+    public static PersonnelException assessNotFound() {
+        return new PersonnelException(".assess.not.found");
+    }
+
+    public static PersonnelException invlidId() {
+        return new PersonnelException(".invalid.id");
+    }
 }

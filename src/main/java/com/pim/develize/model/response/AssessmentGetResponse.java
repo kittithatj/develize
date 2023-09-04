@@ -1,10 +1,11 @@
-package com.pim.develize.model.request;
+package com.pim.develize.model.response;
 
-import com.pim.develize.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 
-public class AssessmentModel {
-    public Long personnel_id;
-
+@Getter
+@Setter
+public class AssessmentGetResponse {
     public Integer deliverableQuality;
 
     public Integer teamwork;
