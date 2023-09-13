@@ -58,6 +58,12 @@ public class PersonnelApi {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping ("/edit")
+    public ResponseEntity<Personnel> editPersonnel(@RequestBody PersonnelModel personnel){
+        Personnel response = personnelService.editPersonnel(personnel);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/skill/set")
     public ResponseEntity<Personnel> setPersonnelSkill(@RequestBody SetSkillModel s) throws BaseException {
         Personnel response = personnelService.setPersonnelSkill(s.personnel_id,s.skill_id);

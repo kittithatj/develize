@@ -8,6 +8,7 @@ import com.pim.develize.model.request.PersonnelModel;
 import com.pim.develize.repository.JobAssessmentRepository;
 import com.pim.develize.repository.PersonnelRepository;
 import com.pim.develize.repository.SkillRepository;
+import com.pim.develize.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -27,7 +28,6 @@ public class PersonnelService {
         this.skillRepository = skillRepository;
         this.jobAssessmentRepository = jobAssessmentRepository;
     }
-
 
     public Personnel createPersonnel(PersonnelModel p) {
         Personnel entity = new Personnel();
@@ -50,6 +50,37 @@ public class PersonnelService {
         }
 
         entity.setSkills(skills);
+
+        return personnelRepository.save(entity);
+    }
+
+    public Personnel editPersonnel(PersonnelModel p) {
+
+//        Personnel personnel = personnelRepository.findById(p.personnel_id).get();
+//        personnel.;
+
+        Personnel entity = personnelRepository.findById(p.personnel_id).get();
+        entity.setFirstName(p.firstName);
+        entity.setLastName(p.lastName);
+        entity.setEmail(p.email);
+        entity.setPhoneNumber(p.phoneNumber);
+        entity.setDivision(p.division);
+        entity.setPosition(p.position);
+        entity.setEmploymentStatus(p.employmentStatus);
+        entity.setLastUpdate(new Timestamp(System.currentTimeMillis()));
+
+        Set<Skill> skills = new HashSet();
+        if(p.skillsId.length > 0){
+            for (Long id : p.skillsId)
+            {
+                Optional<Skill> s = skillRepository.findById(id);
+                skills.add(s.get());
+            }
+        }
+
+//        entity.setSkills(skills);
+        entity.getSkills().clear();
+        entity.getSkills().addAll(skills);
 
         return personnelRepository.save(entity);
     }

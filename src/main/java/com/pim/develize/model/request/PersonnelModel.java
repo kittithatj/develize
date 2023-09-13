@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PersonnelModel {
+    public Long personnel_id;
     public String firstName;
     public String lastName;
     public String email;
