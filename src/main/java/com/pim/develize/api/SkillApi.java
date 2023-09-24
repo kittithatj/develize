@@ -19,8 +19,12 @@ import java.util.List;
 @RequestMapping("/skill")
 public class SkillApi {
 
-    @Autowired
+    final
     SkillService skillService;
+
+    public SkillApi(SkillService skillService) {
+        this.skillService = skillService;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<Skill> createSkill(@RequestBody SkillModel s) throws BaseException {

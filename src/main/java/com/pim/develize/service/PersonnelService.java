@@ -40,7 +40,7 @@ public class PersonnelService {
         entity.setEmploymentStatus(p.employmentStatus);
         entity.setLastUpdate(new Timestamp(System.currentTimeMillis()));
 
-        Set<Skill> skills = new HashSet();
+        List<Skill> skills = new ArrayList<>();
         if(p.skillsId.length > 0){
             for (Long id : p.skillsId)
             {
@@ -90,7 +90,7 @@ public class PersonnelService {
         if(!personnel.isPresent()){
             throw PersonnelException.setSkillFailed();
         }
-        Set<Skill> skillSet = new HashSet<Skill>();
+        List<Skill> skillSet = new ArrayList<>();
         for (Long i:skill_id) {
             Optional<Skill> skill = skillRepository.findById(i);
             skillSet.add(skill.get());

@@ -23,10 +23,15 @@ import java.util.Optional;
 @RequestMapping("/personnel")
 public class PersonnelApi {
 
-    @Autowired
+    final
     PersonnelService personnelService;
-    @Autowired
+    final
     JobAssessmentService jobAssessmentService;
+
+    public PersonnelApi(PersonnelService personnelService, JobAssessmentService jobAssessmentService) {
+        this.personnelService = personnelService;
+        this.jobAssessmentService = jobAssessmentService;
+    }
 
     @GetMapping("/get")
     public ResponseEntity<Iterable<Personnel>> getAllPersonnel(){

@@ -16,8 +16,11 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserApi {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserApi(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/register")
     public UserInfoModel register(@RequestBody UserModel user) throws BaseException {

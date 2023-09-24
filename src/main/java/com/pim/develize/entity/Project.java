@@ -7,10 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.HashSet;
+import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -42,7 +41,7 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
     @JsonIgnoreProperties("projects")
-    private Set<Skill> skillsRequired = new HashSet<>();
+    private List<Skill> skillsRequired = new ArrayList<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "project_assignments")
