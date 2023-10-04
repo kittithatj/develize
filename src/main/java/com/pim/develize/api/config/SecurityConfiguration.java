@@ -49,7 +49,7 @@ public class SecurityConfiguration {
                 .cors().disable()
                 .csrf().disable()
 //                .authorizeRequests().requestMatchers("*")
-                .authorizeRequests().requestMatchers("/user/login", "/user/register")
+                .authorizeRequests().requestMatchers("/user/*")
                 .permitAll()
                 .anyRequest()
 //                .permitAll()

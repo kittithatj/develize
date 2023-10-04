@@ -1,14 +1,20 @@
 package com.pim.develize.service;
 
 import com.pim.develize.entity.Personnel;
+import com.pim.develize.entity.Project;
 import com.pim.develize.entity.Skill;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.exception.PersonnelException;
 import com.pim.develize.model.request.PersonnelModel;
+import com.pim.develize.model.response.PersonnnelGetResponse;
+import com.pim.develize.model.response.ProjectGetShortResponse;
+import com.pim.develize.model.response.SkillGetResponse;
 import com.pim.develize.repository.JobAssessmentRepository;
 import com.pim.develize.repository.PersonnelRepository;
+import com.pim.develize.repository.ProjectRepository;
 import com.pim.develize.repository.SkillRepository;
 import com.pim.develize.util.ObjectMapperUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -22,11 +28,15 @@ public class PersonnelService {
     final
     PersonnelRepository personnelRepository;
 
+    final
+    ProjectRepository projectRepository;
+
     final JobAssessmentRepository jobAssessmentRepository;
-    public PersonnelService(PersonnelRepository personnelRepository, SkillRepository skillRepository, JobAssessmentRepository jobAssessmentRepository) {
+    public PersonnelService(PersonnelRepository personnelRepository, SkillRepository skillRepository, JobAssessmentRepository jobAssessmentRepository, ProjectRepository projectRepository) {
         this.personnelRepository = personnelRepository;
         this.skillRepository = skillRepository;
         this.jobAssessmentRepository = jobAssessmentRepository;
+        this.projectRepository = projectRepository;
     }
 
     public Personnel createPersonnel(PersonnelModel p) {
@@ -107,8 +117,18 @@ public class PersonnelService {
         return personnelRepository.findPositionList();
     }
 
-    public Iterable<Personnel> getAllPersonnel(){
-        return personnelRepository.findAll();
+    public List<PersonnnelGetResponse> getAllPersonnel(){
+        List<Personnel> personnelList = personnelRepository.findAll();
+        List<PersonnnelGetResponse> personnelGetList = ObjectMapperUtils.mapAll(personnelList, PersonnnelGetResponse.class);
+        personnelGetList.forEach(p -> {
+            List<Skill> skills = skillRepository.findAllByPersonnelsPersonnel_id(p.getPersonnel_id());
+            List<SkillGetResponse> skillGet = ObjectMapperUtils.mapAll(skills, SkillGetResponse.class);
+            List<Project> projects = projectRepository.findAllByPersonnelId(p.getPersonnel_id());
+            List<ProjectGetShortResponse> projectGet = ObjectMapperUtils.mapAll(projects, ProjectGetShortResponse.class);
+            p.setSkills(skillGet);
+            p.setProjectHistories(projectGet);
+        });
+        return personnelGetList;
     }
 
     public Optional<Personnel> getPersonnelById(Long id) { return personnelRepository.findById(id);}

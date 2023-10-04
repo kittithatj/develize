@@ -32,7 +32,7 @@ public class UserApi {
         return ResponseEntity.ok(userService.login(user));
     }
 
-    @GetMapping("/get")
+    @GetMapping("/get-list")
     public List<UserInfoModel> getAllUser() {
         return userService.getAllUsers();
     }

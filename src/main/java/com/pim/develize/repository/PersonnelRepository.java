@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface PersonnelRepository extends CrudRepository<Personnel, Long> {
 
+    public List<Personnel> findAll();
+
     public Optional<Personnel> findByFirstName(String firstName);
 
     @Query(value="SELECT p FROM Personnel p where p.firstName like %:name% or p.lastName like %:name%")

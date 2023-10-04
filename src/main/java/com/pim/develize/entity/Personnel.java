@@ -1,5 +1,6 @@
 package com.pim.develize.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -45,17 +46,17 @@ public class Personnel {
             joinColumns = @JoinColumn(name = "personnel_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
-    @JsonIgnoreProperties("personnels")
+    @JsonIgnore
     private List<Skill> skills= new ArrayList<>();
 
     @OneToMany(mappedBy = "personnel", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "project_histories")
-    @JsonIgnoreProperties(value = "personnel")
+    @JsonIgnore
     private List<ProjectHistory> projectHistories;
 
     @OneToMany(mappedBy = "personnel", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "assessments")
-    @JsonIgnoreProperties(value = "personnel")
+    @JsonIgnore
     private List<JobAssessment> assessments;
 
     @Column(name = "last_update")

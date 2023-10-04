@@ -8,6 +8,7 @@ import com.pim.develize.model.request.AssessmentModel;
 import com.pim.develize.model.request.PersonnelModel;
 import com.pim.develize.model.request.SetSkillModel;
 import com.pim.develize.model.response.AssessmentGetResponse;
+import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.service.JobAssessmentService;
 import com.pim.develize.service.PersonnelService;
 import com.pim.develize.util.ObjectMapperUtils;
@@ -33,10 +34,9 @@ public class PersonnelApi {
         this.jobAssessmentService = jobAssessmentService;
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<Iterable<Personnel>> getAllPersonnel(){
-        Iterable<Personnel> response = personnelService.getAllPersonnel();
-        return ResponseEntity.ok(response);
+    @GetMapping("/get-list")
+    public ResponseEntity<List<PersonnnelGetResponse>> getAllPersonnel(){
+        return ResponseEntity.ok(personnelService.getAllPersonnel());
     }
 
     @GetMapping("/{id}")

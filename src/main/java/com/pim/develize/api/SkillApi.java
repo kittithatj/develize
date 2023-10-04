@@ -36,7 +36,7 @@ public class SkillApi {
         }
     }
 
-    @GetMapping("/get")
+    @GetMapping("/get-list")
     public ResponseEntity<List<SkillGetResponse>> getAllSkills() {
         List<Skill> skills = skillService.getAllSKills();
         List<SkillGetResponse> response = new ArrayList<>();
