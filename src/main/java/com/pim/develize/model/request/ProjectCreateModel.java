@@ -25,7 +25,7 @@ public class ProjectCreateModel {
 
     private List<Long> skillRequireIdList;
 
-    private List<Long> memberIdList;
+    private List<PersonnelAssignModel> memberAssignment;
 
     private BigDecimal budget;
 

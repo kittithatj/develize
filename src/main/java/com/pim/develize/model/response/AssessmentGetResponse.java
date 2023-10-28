@@ -18,4 +18,6 @@ public class AssessmentGetResponse {
 
     public Integer attendance;
 
+    public Double jobPerformance;
+
 }

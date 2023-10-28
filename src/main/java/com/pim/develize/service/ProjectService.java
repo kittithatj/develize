@@ -5,6 +5,7 @@ import com.pim.develize.entity.Project;
 import com.pim.develize.entity.ProjectHistory;
 import com.pim.develize.entity.Skill;
 import com.pim.develize.exception.BaseException;
+import com.pim.develize.model.request.PersonnelAssignHistory;
 import com.pim.develize.model.request.PersonnelModel;
 import com.pim.develize.model.request.ProjectCreateModel;
 import com.pim.develize.model.response.ProjectGetResponse;
@@ -78,10 +79,14 @@ public class ProjectService {
             skillList.add(s);
         });
 
-        List<Personnel> personnelList = new ArrayList<>();
-        params.getMemberIdList().forEach(personnelId -> {
-            Personnel p = personnelRepository.findById(personnelId).get();
-            personnelList.add(p);
+        List<PersonnelAssignHistory> assignmentList = new ArrayList<>();
+        params.getMemberAssignment().forEach(assignment -> {
+            Personnel p = personnelRepository.findById(assignment.personnel_id).get();
+            PersonnelAssignHistory saveAssign = new PersonnelAssignHistory();
+            saveAssign.setPersonnel(p);
+            saveAssign.setRole(assignment.role);
+            assignmentList.add(saveAssign);
+
         });
 
         project.setSkillsRequired(skillList);
@@ -90,10 +95,12 @@ public class ProjectService {
 
         List<ProjectHistory> memberAssign = new ArrayList<>();
 
-        personnelList.forEach(personnel -> {
+        assignmentList.forEach(a -> {
             ProjectHistory history = new ProjectHistory();
             history.setProject(newProject);
-            history.setPersonnel(personnel);
+            history.setPersonnel(a.getPersonnel());
+            history.setRole(a.getRole());
+            history.setAssignDate(new Date());
             ProjectHistory history_ = projectHistoryRepository.save(history);
             memberAssign.add(history_);
         });
