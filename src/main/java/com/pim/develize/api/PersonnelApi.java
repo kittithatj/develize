@@ -40,8 +40,8 @@ public class PersonnelApi {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Personnel> getPersonnelById(@PathVariable("id") Long id){
-        Personnel response = personnelService.getPersonnelById(id).get();
+    public ResponseEntity<PersonnnelGetResponse> getPersonnelById(@PathVariable("id") Long id) throws PersonnelException {
+        PersonnnelGetResponse response = personnelService.getPersonnelById(id);
         return ResponseEntity.ok(response);
     }
 

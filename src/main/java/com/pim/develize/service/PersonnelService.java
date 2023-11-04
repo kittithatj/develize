@@ -131,7 +131,21 @@ public class PersonnelService {
         return personnelGetList;
     }
 
-    public Optional<Personnel> getPersonnelById(Long id) { return personnelRepository.findById(id);}
+    public PersonnnelGetResponse getPersonnelById(Long id) throws PersonnelException {
+        Optional<Personnel> opt = personnelRepository.findById(id);
+        if(!opt.isPresent()) {
+            throw PersonnelException.getInfomationFail();
+        }
+        PersonnnelGetResponse personnelGet = ObjectMapperUtils.map(opt.get(), PersonnnelGetResponse.class);
+        List<Skill> skills = skillRepository.findAllByPersonnelsPersonnel_id(personnelGet.getPersonnel_id());
+        List<SkillGetResponse> skillGet = ObjectMapperUtils.mapAll(skills, SkillGetResponse.class);
+        List<Project> projects = projectRepository.findAllByPersonnelId(personnelGet.getPersonnel_id());
+        List<ProjectGetShortResponse> projectGet = ObjectMapperUtils.mapAll(projects, ProjectGetShortResponse.class);
+        personnelGet.setSkills(skillGet);
+        personnelGet.setProjectHistories(projectGet);
+
+        return personnelGet;
+    }
 
     public Optional<Personnel> getPersonnelAccessById(Long id) { return personnelRepository.findById(id);}
 
