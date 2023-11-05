@@ -8,6 +8,7 @@ import com.pim.develize.model.request.AssessmentModel;
 import com.pim.develize.model.request.PersonnelModel;
 import com.pim.develize.model.request.SetSkillModel;
 import com.pim.develize.model.response.AssessmentGetResponse;
+import com.pim.develize.model.response.AssessmentOverviewResponse;
 import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.service.JobAssessmentService;
 import com.pim.develize.service.PersonnelService;
@@ -55,6 +56,12 @@ public class PersonnelApi {
             throw PersonnelException.assessNotFound();
         }
         return ResponseEntity.ok(ObjectMapperUtils.map(jobAssessment,AssessmentGetResponse.class));
+    }
+
+    @GetMapping("overview-access/{id}")
+    public ResponseEntity<AssessmentOverviewResponse> getPersonnelAssessOverviewById(@PathVariable("id") Long id) throws BaseException {
+        AssessmentOverviewResponse response = jobAssessmentService.getPersonnelOverviewAssessment(id);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/create")

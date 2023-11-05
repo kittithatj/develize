@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface JobAssessmentRepository extends CrudRepository<JobAssessment, Long> {
 
-    public List<JobAssessment> findByPersonnel(Personnel personnel);
+    public List<JobAssessment> findAllByPersonnel(Personnel personnel);
 
     public List<JobAssessment> findByAssessBy(User user);
 

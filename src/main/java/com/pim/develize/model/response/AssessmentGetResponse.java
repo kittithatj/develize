@@ -6,17 +6,26 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AssessmentGetResponse {
-    public Integer deliverableQuality;
+    public AssessmentGetResponse(){
+        deliverableQuality = 0.0;
+        teamwork = 0.0;
+        innovation = 0.0;
+        attitude = 0.0;
+        jobKnowledge = 0.0;
+        attendance = 0.0;
+        jobPerformance = 0.0;
+    }
+    public Double deliverableQuality;
 
-    public Integer teamwork;
+    public Double teamwork;
 
-    public Integer innovation;
+    public Double innovation;
 
-    public Integer attitude;
+    public Double attitude;
 
-    public Integer jobKnowledge;
+    public Double jobKnowledge;
 
-    public Integer attendance;
+    public Double attendance;
 
     public Double jobPerformance;
 
