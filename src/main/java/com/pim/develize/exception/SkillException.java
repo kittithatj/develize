@@ -14,6 +14,8 @@ public class SkillException extends BaseException{
         return new SkillException("req.null");
     }
 
+    public static SkillException skillNotFound() { return new SkillException("not.found"); }
+
     public static SkillException deleteFailed() {
         return new SkillException("delete.failed");
     }

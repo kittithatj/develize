@@ -10,4 +10,8 @@ public class ProjectException extends BaseException{
         return new ProjectException(".create.failed");
     }
 
+    public static ProjectException ProjectNotFound() {
+        return new ProjectException(".not.found");
+    }
+
 }

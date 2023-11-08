@@ -31,9 +31,25 @@ public class Skill {
     @JsonIgnoreProperties("skillsRequired")
     private Set<Project> projects = new HashSet<>();
 
-    public void removePersonel(Personnel p){
-        this.personnels.remove(p);
-        p.getSkills().remove(this);
+//    public void removePersonels(Personnel p){
+//        this.personnels.remove(p);
+//        p.getSkills().remove(this);
+//    }
+//
+//    public void removeProjects(Project p){
+//        this.projects.remove(p);
+//        p.getSkillsRequired().remove(this);
+//    }
+
+    public void removeConstrains(Skill skill){
+        for(Personnel p : skill.getPersonnels()){
+            this.personnels.remove(p);
+            p.getSkills().remove(this);
+        }
+        for(Project p : skill.getProjects()){
+            this.projects.remove(p);
+            p.getSkillsRequired().remove(this);
+        }
     }
 
 }

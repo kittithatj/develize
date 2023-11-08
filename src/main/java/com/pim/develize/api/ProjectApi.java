@@ -39,4 +39,10 @@ public class ProjectApi {
         return ResponseEntity.ok(project);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> DeleteProject(@PathVariable("id") Long id) throws BaseException{
+        projectService.deleteProjectById(id);
+        return ResponseEntity.ok("Delete Project Successfully");
+    }
+
 }

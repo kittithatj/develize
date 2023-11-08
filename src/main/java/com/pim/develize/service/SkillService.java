@@ -1,6 +1,7 @@
 package com.pim.develize.service;
 
 import com.pim.develize.entity.Personnel;
+import com.pim.develize.entity.Project;
 import com.pim.develize.entity.Skill;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.exception.SkillException;
@@ -44,17 +45,12 @@ public class SkillService {
 
     public void deleteSkillById(Long id) throws SkillException {
         Optional<Skill> opt = skillRepository.findById(id);
-
-        if(!opt.isEmpty()) {
-            for (Personnel p : opt.get().getPersonnels()) {
-                opt.get().removePersonel(p);
-            }
+        if(opt.isPresent()) {
+            opt.get().removeConstrains(opt.get());
             skillRepository.delete(opt.get());
         }else{
-            throw SkillException.deleteFailed();
+            throw SkillException.skillNotFound();
         }
-
     }
-
 
 }

@@ -53,4 +53,12 @@ public class Project {
 
     @Column(name = "project_status")
     private String projectStatus;
+
+    public void removeConstrains(Project project){
+        this.skillsRequired.removeAll(project.getSkillsRequired());
+        for(Skill s : project.getSkillsRequired()){
+            s.getProjects().remove(this);
+        }
+    }
+
 }

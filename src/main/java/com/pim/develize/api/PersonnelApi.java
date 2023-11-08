@@ -97,4 +97,10 @@ public class PersonnelApi {
     public ResponseEntity<List<String>> getPositionList(){
         return ResponseEntity.ok(personnelService.getPositionList());
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> DeletePersonnel(@PathVariable("id") Long id) throws BaseException{
+        personnelService.deletePersonnelById(id);
+        return ResponseEntity.ok("Delete Personnel Successfully");
+    }
 }

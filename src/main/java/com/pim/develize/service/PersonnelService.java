@@ -1,20 +1,14 @@
 package com.pim.develize.service;
 
-import com.pim.develize.entity.Personnel;
-import com.pim.develize.entity.Project;
-import com.pim.develize.entity.Skill;
+import com.pim.develize.entity.*;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.exception.PersonnelException;
 import com.pim.develize.model.request.PersonnelModel;
 import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.model.response.ProjectGetShortResponse;
 import com.pim.develize.model.response.SkillGetResponse;
-import com.pim.develize.repository.JobAssessmentRepository;
-import com.pim.develize.repository.PersonnelRepository;
-import com.pim.develize.repository.ProjectRepository;
-import com.pim.develize.repository.SkillRepository;
+import com.pim.develize.repository.*;
 import com.pim.develize.util.ObjectMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -31,12 +25,16 @@ public class PersonnelService {
     final
     ProjectRepository projectRepository;
 
+    final
+    ProjectHistoryRepository projectHistoryRepository;
+
     final JobAssessmentRepository jobAssessmentRepository;
-    public PersonnelService(PersonnelRepository personnelRepository, SkillRepository skillRepository, JobAssessmentRepository jobAssessmentRepository, ProjectRepository projectRepository) {
+    public PersonnelService(PersonnelRepository personnelRepository, SkillRepository skillRepository, JobAssessmentRepository jobAssessmentRepository, ProjectRepository projectRepository, ProjectHistoryRepository projectHistoryRepository) {
         this.personnelRepository = personnelRepository;
         this.skillRepository = skillRepository;
         this.jobAssessmentRepository = jobAssessmentRepository;
         this.projectRepository = projectRepository;
+        this.projectHistoryRepository = projectHistoryRepository;
     }
 
     public Personnel createPersonnel(PersonnelModel p) {
@@ -134,7 +132,7 @@ public class PersonnelService {
     public PersonnnelGetResponse getPersonnelById(Long id) throws PersonnelException {
         Optional<Personnel> opt = personnelRepository.findById(id);
         if(!opt.isPresent()) {
-            throw PersonnelException.getInfomationFail();
+            throw PersonnelException.personnelNotFound();
         }
         PersonnnelGetResponse personnelGet = ObjectMapperUtils.map(opt.get(), PersonnnelGetResponse.class);
         List<Skill> skills = skillRepository.findAllByPersonnelsPersonnel_id(personnelGet.getPersonnel_id());
@@ -145,6 +143,30 @@ public class PersonnelService {
         personnelGet.setProjectHistories(projectGet);
 
         return personnelGet;
+    }
+
+    public void deletePersonnelById(Long id) throws BaseException {
+        Optional<Personnel> opt = personnelRepository.findById(id);
+        if(opt.isPresent()) {
+
+            opt.get().removeConstrains(opt.get());
+
+            List<ProjectHistory> hList = projectHistoryRepository.findAllByPersonnel(opt.get());
+            for(ProjectHistory h : hList){
+                projectHistoryRepository.delete(h);
+            }
+
+            List<JobAssessment> aList = jobAssessmentRepository.findAllByPersonnel(opt.get());
+            for(JobAssessment a : aList){
+                jobAssessmentRepository.delete(a);
+            }
+
+            personnelRepository.delete(opt.get());
+
+        }else{
+            throw PersonnelException.personnelNotFound();
+        }
+
     }
 
     public Optional<Personnel> getPersonnelAccessById(Long id) { return personnelRepository.findById(id);}

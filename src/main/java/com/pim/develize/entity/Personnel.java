@@ -61,4 +61,11 @@ public class Personnel {
 
     @Column(name = "last_update")
     private Timestamp lastUpdate;
+
+    public void removeConstrains(Personnel personnel){
+        this.skills.removeAll(personnel.getSkills());
+        for(Skill s : personnel.getSkills()){
+            s.getPersonnels().remove(this);
+        }
+    }
 }

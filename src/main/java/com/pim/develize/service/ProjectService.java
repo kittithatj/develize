@@ -1,10 +1,9 @@
 package com.pim.develize.service;
 
-import com.pim.develize.entity.Personnel;
-import com.pim.develize.entity.Project;
-import com.pim.develize.entity.ProjectHistory;
-import com.pim.develize.entity.Skill;
+import com.pim.develize.entity.*;
 import com.pim.develize.exception.BaseException;
+import com.pim.develize.exception.PersonnelException;
+import com.pim.develize.exception.ProjectException;
 import com.pim.develize.model.request.PersonnelAssignHistory;
 import com.pim.develize.model.request.PersonnelModel;
 import com.pim.develize.model.request.ProjectCreateModel;
@@ -114,5 +113,24 @@ public class ProjectService {
         response.setProjectMember(personnels);
 
         return response;
+    }
+
+    public void deleteProjectById(Long id) throws BaseException {
+        Optional<Project> opt = projectRepository.findById(id);
+        if(opt.isPresent()) {
+
+            opt.get().removeConstrains(opt.get());
+
+            List<ProjectHistory> hList = projectHistoryRepository.findAllByProject(opt.get());
+            for(ProjectHistory h : hList){
+                projectHistoryRepository.delete(h);
+            }
+
+            projectRepository.delete(opt.get());
+
+        }else{
+            throw ProjectException.ProjectNotFound();
+        }
+
     }
 }
