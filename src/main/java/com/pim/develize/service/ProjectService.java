@@ -15,6 +15,7 @@ import com.pim.develize.repository.SkillRepository;
 import com.pim.develize.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,7 +60,7 @@ public class ProjectService {
             SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
             startDate = format.parse(params.getStartDate());
         }
-        if(params.getStartDate() != null){
+        if(params.getEndDate() != null){
             params.getEndDate();
             SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
             endDate = format.parse(params.getEndDate());
@@ -85,7 +86,6 @@ public class ProjectService {
             saveAssign.setPersonnel(p);
             saveAssign.setRole(assignment.role);
             assignmentList.add(saveAssign);
-
         });
 
         project.setSkillsRequired(skillList);
@@ -109,6 +109,74 @@ public class ProjectService {
         Project finalProject = projectRepository.save(newProject);
         ProjectGetResponse response = ObjectMapperUtils.map(finalProject, ProjectGetResponse.class);
         List<Personnel> personnelList_ = personnelRepository.findByProjectId(finalProject.getProject_id());
+        List<PersonnelModel> personnels = ObjectMapperUtils.mapAll(personnelList_, PersonnelModel.class);
+        response.setProjectMember(personnels);
+
+        return response;
+    }
+
+    @Transactional
+    public ProjectGetResponse editProject(ProjectCreateModel params) throws BaseException, ParseException {
+        Optional<Project> pOpt = projectRepository.findById(params.getProject_id());
+        if(pOpt.isEmpty()){
+            throw ProjectException.ProjectNotFound();
+        }
+
+        Project project = pOpt.get();
+
+        if(params.getStartDate() != null){
+            Date startDate;
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+            startDate = format.parse(params.getStartDate());
+            project.setStartDate(startDate);
+        }
+        if(params.getStartDate() != null){
+            Date endDate;
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+            endDate = format.parse(params.getEndDate());
+            project.setEndDate(endDate);
+        }
+
+        project.setProjectName(params.getProjectName());
+        project.setProjectDescription(params.getProjectDescription());
+        project.setProjectType(params.getProjectType());
+        project.setProjectStatus(params.getProjectStatus());
+        project.setBudget(params.getBudget());
+
+        List<Skill> skillList = new ArrayList<>();
+        params.getSkillRequireIdList().forEach(skillId -> {
+            Skill s = skillRepository.findById(skillId).get();
+            skillList.add(s);
+        });
+
+        List<PersonnelAssignHistory> assignmentList = new ArrayList<>();
+        params.getMemberAssignment().forEach(assignment -> {
+            Personnel p = personnelRepository.findById(assignment.personnel_id).get();
+            PersonnelAssignHistory saveAssign = new PersonnelAssignHistory();
+            saveAssign.setPersonnel(p);
+            saveAssign.setRole(assignment.role);
+            assignmentList.add(saveAssign);
+        });
+
+        List<ProjectHistory> memberAssign = new ArrayList<>();
+        assignmentList.forEach(a -> {
+            ProjectHistory history = new ProjectHistory();
+            history.setProject(project);
+            history.setPersonnel(a.getPersonnel());
+            history.setRole(a.getRole());
+            history.setAssignDate(new Date());
+            ProjectHistory history_ = projectHistoryRepository.save(history);
+            memberAssign.add(history_);
+        });
+
+        //projectHistoryRepository.deleteAllByProject(project);
+
+        project.setSkillsRequired(skillList);
+        project.setProjectAssignments(memberAssign);
+
+        Project savedProject = projectRepository.save(project);
+        ProjectGetResponse response = ObjectMapperUtils.map(savedProject, ProjectGetResponse.class);
+        List<Personnel> personnelList_ = personnelRepository.findByProjectId(savedProject.getProject_id());
         List<PersonnelModel> personnels = ObjectMapperUtils.mapAll(personnelList_, PersonnelModel.class);
         response.setProjectMember(personnels);
 

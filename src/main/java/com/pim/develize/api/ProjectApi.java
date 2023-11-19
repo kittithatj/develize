@@ -39,6 +39,12 @@ public class ProjectApi {
         return ResponseEntity.ok(project);
     }
 
+    @PutMapping("/edit")
+    public ResponseEntity<ProjectGetResponse> EditProject(@RequestBody ProjectCreateModel params) throws BaseException, ParseException {
+        ProjectGetResponse project = projectService.editProject(params);
+        return ResponseEntity.ok(project);
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> DeleteProject(@PathVariable("id") Long id) throws BaseException{
         projectService.deleteProjectById(id);

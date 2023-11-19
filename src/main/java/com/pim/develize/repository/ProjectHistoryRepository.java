@@ -15,4 +15,6 @@ public interface ProjectHistoryRepository extends CrudRepository<ProjectHistory,
     public List<ProjectHistory> findAllByPersonnel(Personnel personnel);
 
     public List<ProjectHistory> findAllByProject(Project project);
+
+    public void deleteAllByProject(Project project);
 }

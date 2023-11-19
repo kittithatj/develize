@@ -61,4 +61,11 @@ public class Project {
         }
     }
 
+    public void setProjectAssignments(List<ProjectHistory>  pList){
+        this.projectAssignments.clear();
+        if(pList != null){
+            this.projectAssignments.addAll(pList);
+        }
+    }
+
 }
