@@ -172,7 +172,7 @@ public class ProjectService {
         //projectHistoryRepository.deleteAllByProject(project);
 
         project.setSkillsRequired(skillList);
-        project.setProjectAssignments(memberAssign);
+        project.setProjectAssignmentsEdit(memberAssign);
 
         Project savedProject = projectRepository.save(project);
         ProjectGetResponse response = ObjectMapperUtils.map(savedProject, ProjectGetResponse.class);
