@@ -9,6 +9,10 @@ import com.pim.develize.model.response.ProjectGetShortResponse;
 import com.pim.develize.model.response.SkillGetResponse;
 import com.pim.develize.repository.*;
 import com.pim.develize.util.ObjectMapperUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -28,13 +32,21 @@ public class PersonnelService {
     final
     ProjectHistoryRepository projectHistoryRepository;
 
+    final
+    JobAssessmentService jobAssessmentService;
+
+    final
+    UserRepository userRepository;
+
     final JobAssessmentRepository jobAssessmentRepository;
-    public PersonnelService(PersonnelRepository personnelRepository, SkillRepository skillRepository, JobAssessmentRepository jobAssessmentRepository, ProjectRepository projectRepository, ProjectHistoryRepository projectHistoryRepository) {
+    public PersonnelService(PersonnelRepository personnelRepository, SkillRepository skillRepository, JobAssessmentRepository jobAssessmentRepository, ProjectRepository projectRepository, ProjectHistoryRepository projectHistoryRepository, JobAssessmentService jobAssessmentService, UserRepository userRepository) {
         this.personnelRepository = personnelRepository;
         this.skillRepository = skillRepository;
         this.jobAssessmentRepository = jobAssessmentRepository;
         this.projectRepository = projectRepository;
         this.projectHistoryRepository = projectHistoryRepository;
+        this.jobAssessmentService = jobAssessmentService;
+        this.userRepository = userRepository;
     }
 
     public Personnel createPersonnel(PersonnelModel p) {
@@ -116,6 +128,11 @@ public class PersonnelService {
     }
 
     public List<PersonnnelGetResponse> getAllPersonnel(){
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+        Optional<User> optU = userRepository.findById(userId);
+
         List<Personnel> personnelList = personnelRepository.findAll();
         List<PersonnnelGetResponse> personnelGetList = ObjectMapperUtils.mapAll(personnelList, PersonnnelGetResponse.class);
         personnelGetList.forEach(p -> {
@@ -125,6 +142,8 @@ public class PersonnelService {
             List<ProjectGetShortResponse> projectGet = ObjectMapperUtils.mapAll(projects, ProjectGetShortResponse.class);
             p.setSkills(skillGet);
             p.setProjectHistories(projectGet);
+            Boolean hasAssessed = jobAssessmentService.checkIfAssessed(optU.get(), p.getPersonnel_id());
+            p.setHasAssessed(hasAssessed);
         });
         return personnelGetList;
     }

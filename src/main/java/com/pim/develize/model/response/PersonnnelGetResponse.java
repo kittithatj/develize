@@ -32,4 +32,6 @@ public class PersonnnelGetResponse {
 
     private Timestamp lastUpdate;
 
+    private Boolean hasAssessed;
+
 }

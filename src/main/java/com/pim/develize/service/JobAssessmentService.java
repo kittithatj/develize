@@ -135,4 +135,10 @@ public class JobAssessmentService {
         return res;
     }
 
+    public Boolean checkIfAssessed(User user, Long personnelId){
+        Personnel personnel = personnelRepository.findById(personnelId).get();
+        Optional<JobAssessment> opt = jobAssessmentRepository.findByAssessByAndPersonnel(user,personnel);
+        return opt.isPresent();
+    }
+
 }
