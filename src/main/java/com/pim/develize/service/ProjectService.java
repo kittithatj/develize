@@ -8,6 +8,7 @@ import com.pim.develize.model.MailModel;
 import com.pim.develize.model.request.PersonnelAssignHistory;
 import com.pim.develize.model.request.PersonnelModel;
 import com.pim.develize.model.request.ProjectCreateModel;
+import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.model.response.ProjectGetEditResponse;
 import com.pim.develize.model.response.ProjectGetResponse;
 import com.pim.develize.repository.PersonnelRepository;
@@ -52,9 +53,13 @@ public class ProjectService {
         List<ProjectGetResponse> projectResponse = ObjectMapperUtils.mapAll(projects, ProjectGetResponse.class);
         projectResponse.forEach(p -> {
             List<Personnel> personnelList = personnelRepository.findByProjectId(p.getProject_id());
-            List<PersonnelModel> personnels = ObjectMapperUtils.mapAll(personnelList, PersonnelModel.class);
+            List<PersonnnelGetResponse> personnels = ObjectMapperUtils.mapAll(personnelList, PersonnnelGetResponse.class);
             p.setProjectMember(personnels);
+            for (int i = 0; i < personnels.size(); i++) {
+                personnels.get(i).setProjectHistories(null);
+            }
         });
+
         return projectResponse;
     }
 
@@ -67,13 +72,15 @@ public class ProjectService {
         ProjectGetEditResponse projectEditRes = ObjectMapperUtils.map(project, ProjectGetEditResponse.class);
         List<String> roleList = new ArrayList<>();
         List<Personnel> personnelList = personnelRepository.findByProjectId(projectEditRes.getProject_id());
-        List<PersonnelModel> personnels = ObjectMapperUtils.mapAll(personnelList, PersonnelModel.class);
+        List<PersonnnelGetResponse> personnels = ObjectMapperUtils.mapAll(personnelList, PersonnnelGetResponse.class);
         personnelList.forEach(personnel -> {
+
                 ProjectHistory h = projectHistoryRepository.findByPersonnelAndProject(personnel, project);
                 roleList.add(h.getRole());
         });
         for (int i = 0; i < roleList.size(); i++) {
             personnels.get(i).setRole(roleList.get(i));
+            personnels.get(i).setProjectHistories(null);
         }
         projectEditRes.setProjectMember(personnels);
 
@@ -138,7 +145,7 @@ public class ProjectService {
         Project finalProject = projectRepository.save(newProject);
         ProjectGetResponse response = ObjectMapperUtils.map(finalProject, ProjectGetResponse.class);
         List<Personnel> personnelList_ = personnelRepository.findByProjectId(finalProject.getProject_id());
-        List<PersonnelModel> personnels = ObjectMapperUtils.mapAll(personnelList_, PersonnelModel.class);
+        List<PersonnnelGetResponse> personnels = ObjectMapperUtils.mapAll(personnelList_, PersonnnelGetResponse.class);
         response.setProjectMember(personnels);
 
         return response;
@@ -206,7 +213,7 @@ public class ProjectService {
         Project savedProject = projectRepository.save(project);
         ProjectGetResponse response = ObjectMapperUtils.map(savedProject, ProjectGetResponse.class);
         List<Personnel> personnelList_ = personnelRepository.findByProjectId(savedProject.getProject_id());
-        List<PersonnelModel> personnels = ObjectMapperUtils.mapAll(personnelList_, PersonnelModel.class);
+        List<PersonnnelGetResponse> personnels = ObjectMapperUtils.mapAll(personnelList_, PersonnnelGetResponse.class);
         response.setProjectMember(personnels);
 
         return response;
@@ -244,13 +251,14 @@ public class ProjectService {
 
         MailModel mail = new MailModel();
         mail.setSubject("You have been assigned to Develize project! : "+p.getProjectName());
-        mail.setMessage("<h5>We would like to inform you that you have been assigned to project with the information below</h5><br> <br>" +
+        mail.setMessage("<h4>We would like to inform you that you have been assigned to project with the information below</h4><br>" +
                 "Project Name : " +p.getProjectName() + "<br>"+
                 "Project Type : " +p.getProjectType() +"<br>"+
                 "Description : " +p.getProjectDescription() +"<br>"+
+                "Start : "+startDate + "<br>"+
+                "End : "+endDate + "<br>"+
                 "" +
-                "" +
-                "This is an automatically generated email – please do not reply to it. If you have any");
+                "<h5>This is an automatically generated email – please do not reply to it. If you have any<h5>");
 
 
         mailService.sendEmail(mailAddress,mail);

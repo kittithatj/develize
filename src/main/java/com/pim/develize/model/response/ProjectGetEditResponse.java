@@ -27,7 +27,7 @@ public class ProjectGetEditResponse {
 
     private List<SkillGetResponse> skillsRequired;
 
-    private List<PersonnelModel> projectMember;
+    private List<PersonnnelGetResponse> projectMember;
 
     private BigDecimal budget;
 

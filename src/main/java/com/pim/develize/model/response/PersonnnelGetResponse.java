@@ -34,4 +34,5 @@ public class PersonnnelGetResponse {
 
     private Boolean hasAssessed;
 
+    private String role;
 }
