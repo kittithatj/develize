@@ -4,9 +4,11 @@ import com.pim.develize.entity.*;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.exception.PersonnelException;
 import com.pim.develize.exception.ProjectException;
+import com.pim.develize.model.MailModel;
 import com.pim.develize.model.request.PersonnelAssignHistory;
 import com.pim.develize.model.request.PersonnelModel;
 import com.pim.develize.model.request.ProjectCreateModel;
+import com.pim.develize.model.response.ProjectGetEditResponse;
 import com.pim.develize.model.response.ProjectGetResponse;
 import com.pim.develize.repository.PersonnelRepository;
 import com.pim.develize.repository.ProjectHistoryRepository;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -33,11 +36,15 @@ public class ProjectService {
     final
     ProjectHistoryRepository projectHistoryRepository;
 
-    public ProjectService(ProjectRepository projectRepository, PersonnelRepository personnelRepository, SkillRepository skillRepository, ProjectHistoryRepository projectHistoryRepository) {
+    final
+    MailService mailService;
+
+    public ProjectService(ProjectRepository projectRepository, PersonnelRepository personnelRepository, SkillRepository skillRepository, ProjectHistoryRepository projectHistoryRepository, MailService mailService) {
         this.projectRepository = projectRepository;
         this.personnelRepository = personnelRepository;
         this.skillRepository = skillRepository;
         this.projectHistoryRepository = projectHistoryRepository;
+        this.mailService = mailService;
     }
 
     public List<ProjectGetResponse> GetProjectList() {
@@ -49,6 +56,28 @@ public class ProjectService {
             p.setProjectMember(personnels);
         });
         return projectResponse;
+    }
+
+    public ProjectGetEditResponse GetProjectById(Long id) throws BaseException {
+        Optional<Project> opt = projectRepository.findById(id);
+        if(opt.isEmpty()){
+            throw ProjectException.ProjectNotFound();
+        }
+        Project project = opt.get();
+        ProjectGetEditResponse projectEditRes = ObjectMapperUtils.map(project, ProjectGetEditResponse.class);
+        List<String> roleList = new ArrayList<>();
+        List<Personnel> personnelList = personnelRepository.findByProjectId(projectEditRes.getProject_id());
+        List<PersonnelModel> personnels = ObjectMapperUtils.mapAll(personnelList, PersonnelModel.class);
+        personnelList.forEach(personnel -> {
+                ProjectHistory h = projectHistoryRepository.findByPersonnelAndProject(personnel, project);
+                roleList.add(h.getRole());
+        });
+        for (int i = 0; i < roleList.size(); i++) {
+            personnels.get(i).setRole(roleList.get(i));
+        }
+        projectEditRes.setProjectMember(personnels);
+
+        return projectEditRes;
     }
 
     public ProjectGetResponse CreateProject(ProjectCreateModel params) throws ParseException {
@@ -200,5 +229,30 @@ public class ProjectService {
             throw ProjectException.ProjectNotFound();
         }
 
+    }
+
+    public void sendProjectAssignMail(Project p, String mailAddress){
+
+        String[] months = new String[]{
+                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+        };
+
+        p.getStartDate().getMonth();
+
+        String startDate = p.getStartDate().getDate()+" "+months[p.getStartDate().getMonth()-1]+" "+p.getStartDate().getYear();
+        String endDate = p.getEndDate().getDate()+" "+months[p.getEndDate().getMonth()-1]+" "+p.getEndDate().getYear();
+
+        MailModel mail = new MailModel();
+        mail.setSubject("You have been assigned to Develize project! : "+p.getProjectName());
+        mail.setMessage("<h5>We would like to inform you that you have been assigned to project with the information below</h5><br> <br>" +
+                "Project Name : " +p.getProjectName() + "<br>"+
+                "Project Type : " +p.getProjectType() +"<br>"+
+                "Description : " +p.getProjectDescription() +"<br>"+
+                "" +
+                "" +
+                "This is an automatically generated email – please do not reply to it. If you have any");
+
+
+        mailService.sendEmail(mailAddress,mail);
     }
 }

@@ -3,6 +3,7 @@ package com.pim.develize.api;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.model.request.ProjectCreateModel;
 import com.pim.develize.model.request.SkillModel;
+import com.pim.develize.model.response.ProjectGetEditResponse;
 import com.pim.develize.model.response.ProjectGetResponse;
 import com.pim.develize.repository.PersonnelRepository;
 import com.pim.develize.repository.ProjectRepository;
@@ -28,9 +29,15 @@ public class ProjectApi {
     }
 
     @GetMapping("/get-list")
-    public ResponseEntity<List<ProjectGetResponse>> GetPersonnelList() throws BaseException {
+    public ResponseEntity<List<ProjectGetResponse>> GetProjectList() throws BaseException {
         List<ProjectGetResponse> projectList = projectService.GetProjectList();
         return ResponseEntity.ok(projectList);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProjectGetEditResponse> GetProjectById(@PathVariable("id") Long id) throws BaseException {
+        ProjectGetEditResponse p = projectService.GetProjectById(id);
+        return ResponseEntity.ok(p);
     }
 
     @PostMapping("/create")

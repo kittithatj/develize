@@ -31,6 +31,12 @@ public class User {
     @Column(name="role", nullable=false)
     private String role;
 
+    @Column(name="email")
+    private String email;
+
+    @Column(name="is_approved")
+    private Boolean isApproved;
+
     @OneToMany(mappedBy = "assessBy", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "assessments")
     @JsonIgnoreProperties(value = "assessBy")

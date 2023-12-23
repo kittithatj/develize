@@ -1,9 +1,13 @@
 package com.pim.develize;
 
+import com.pim.develize.entity.Project;
 import com.pim.develize.entity.Skill;
 import com.pim.develize.exception.BaseException;
+import com.pim.develize.model.MailModel;
 import com.pim.develize.model.request.UserModel;
 import com.pim.develize.repository.SkillRepository;
+import com.pim.develize.service.MailService;
+import com.pim.develize.service.ProjectService;
 import com.pim.develize.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootApplication
@@ -29,6 +34,12 @@ public class DevelizeApplication {
     @Autowired
     UserService userService;
 
+    @Autowired
+    ProjectService projectService;
+
+    @Autowired
+    MailService mailService;
+
     public static void main(String[] args) {
         SpringApplication.run(DevelizeApplication.class, args);
         System.out.println("Develize Started!");
@@ -36,6 +47,14 @@ public class DevelizeApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void initialData() throws BaseException {
+        Project p = new Project();
+        p.setStartDate(new Date(2022,1,20));
+        p.setEndDate(new Date(2022,10,8));
+        MailModel mail = new MailModel();
+//        mail.setMessage("test");
+//        mail.setSubject("kuy");
+//        mailService.sendEmail("attid1987@gmail.com",mail);
+        projectService.sendProjectAssignMail(p,"attid1987@gmail.com");
         if(setInit){
             System.out.println("Initial Data Processing...");
             //init Data Here

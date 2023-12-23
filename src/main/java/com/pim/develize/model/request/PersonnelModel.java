@@ -16,4 +16,5 @@ public class PersonnelModel {
     public String position;
     public String employmentStatus;
     public Long[] skillsId;
+    public String role;
 }
