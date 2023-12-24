@@ -17,7 +17,7 @@ public class MailSenderConfig {
         mailSender.setPort(587);
 
         mailSender.setUsername("develize.app@gmail.com");
-        mailSender.setPassword("xhwqxwrwsdjiwzhg");
+        mailSender.setPassword("yltgummwzkgrkact");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

@@ -51,10 +51,10 @@ public class DevelizeApplication {
         p.setStartDate(new Date(2022,1,20));
         p.setEndDate(new Date(2022,10,8));
         MailModel mail = new MailModel();
-//        mail.setMessage("test");
-//        mail.setSubject("kuy");
-//        mailService.sendEmail("attid1987@gmail.com",mail);
-        projectService.sendProjectAssignMail(p,"attid1987@gmail.com");
+        mail.setMessage("test");
+        mail.setSubject("kuy");
+        mailService.sendEmail("nano111atom@gmail.com",mail);
+        //projectService.sendProjectAssignMail(p,"attid1987@gmail.com");
         if(setInit){
             System.out.println("Initial Data Processing...");
             //init Data Here

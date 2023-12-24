@@ -1,6 +1,7 @@
 package com.pim.develize.service;
 
 import com.pim.develize.model.MailModel;
+import com.sun.mail.util.MailConnectException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.MailException;

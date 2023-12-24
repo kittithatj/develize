@@ -74,7 +74,6 @@ public class ProjectService {
         List<Personnel> personnelList = personnelRepository.findByProjectId(projectEditRes.getProject_id());
         List<PersonnnelGetResponse> personnels = ObjectMapperUtils.mapAll(personnelList, PersonnnelGetResponse.class);
         personnelList.forEach(personnel -> {
-
                 ProjectHistory h = projectHistoryRepository.findByPersonnelAndProject(personnel, project);
                 roleList.add(h.getRole());
         });
