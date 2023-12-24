@@ -16,4 +16,12 @@ public class UserException extends BaseException {
     public static UserException authorizeFailed() {
         return new UserException("authorize.failed");
     }
+
+    public static UserException notFound() {
+        return new UserException("not.found");
+    }
+
+    public static UserException noPermission() {
+        return new UserException(".no.permission");
+    }
 }

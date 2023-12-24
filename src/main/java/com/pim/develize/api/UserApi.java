@@ -1,10 +1,7 @@
 package com.pim.develize.api;
 
 import com.pim.develize.exception.BaseException;
-import com.pim.develize.model.request.UserInfoModel;
-import com.pim.develize.model.request.UserLoginModel;
-import com.pim.develize.model.request.UserLoginResponseModel;
-import com.pim.develize.model.request.UserModel;
+import com.pim.develize.model.request.*;
 import com.pim.develize.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +38,17 @@ public class UserApi {
     public ResponseEntity<String> refreshToken() throws BaseException{
         String token = userService.refreshToken();
         return ResponseEntity.ok(token);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteUserById(@PathVariable("id") Long id)throws BaseException{
+        userService.deleteUserById(id);
+        return ResponseEntity.ok("Deleted User Successfully");
+    }
+
+    @PutMapping("/approve")
+    public ResponseEntity<UserInfoModel> approveUser(@RequestBody ApproveUserModel user) throws BaseException {
+        UserInfoModel res = userService.assignRole(user.getUserId(), user.getRole());
+        return ResponseEntity.ok(res);
     }
 }

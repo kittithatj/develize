@@ -1,26 +1,41 @@
 package com.pim.develize.service;
 
+import com.pim.develize.entity.JobAssessment;
+import com.pim.develize.entity.Project;
+import com.pim.develize.entity.ProjectHistory;
 import com.pim.develize.entity.User;
 import com.pim.develize.exception.BaseException;
+import com.pim.develize.exception.ProjectException;
 import com.pim.develize.exception.UserException;
+import com.pim.develize.model.MailModel;
 import com.pim.develize.model.request.UserInfoModel;
 import com.pim.develize.model.request.UserLoginModel;
 import com.pim.develize.model.request.UserLoginResponseModel;
 import com.pim.develize.model.request.UserModel;
+import com.pim.develize.repository.JobAssessmentRepository;
 import com.pim.develize.repository.UserRepository;
 import com.pim.develize.util.ObjectMapperUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
 
+    @Value("${config.fe.local.url}")
+    private String url;
+    @Autowired
+    private MailService mailService;
+    @Autowired
+    private JobAssessmentRepository jobAssessmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final TokenService tokenService;
@@ -34,6 +49,14 @@ public class UserService {
     public List<UserInfoModel> getAllUsers(){
         List<User> users = userRepository.findAll();
         List<UserInfoModel> usersInfo = ObjectMapperUtils.mapAll(users, UserInfoModel.class);
+        List<Boolean> isApproveList = new ArrayList<>();
+        users.forEach(u->{
+            isApproveList.add(u.getIsApproved());
+        });
+        for (int i = 0; i < isApproveList.size(); i++) {
+            usersInfo.get(i).setIsApprove(isApproveList.get(i));
+        }
+
         return usersInfo;
     }
 
@@ -46,10 +69,100 @@ public class UserService {
             entity.setPassword(passwordEncoder.encode(user.password));
             entity.setFirstName(user.firstName);
             entity.setLastName(user.lastName);
-            entity.setRole(user.role);
+            entity.setEmail(user.email);
+            entity.setIsApproved(false);
+            entity.setRole("Not-Assigned");
+            if((user.getRole() != null) && user.getRole().equals("Administrator")){
+                entity.setIsApproved(true);
+            }
             entity = userRepository.save(entity);
-            return ObjectMapperUtils.map(entity, UserInfoModel.class);
+            UserInfoModel res = ObjectMapperUtils.map(entity, UserInfoModel.class);
+            res.setIsApprove(false);
+            return res;
         }
+    }
+
+    public UserInfoModel assignRole(Long userId, String role) throws UserException {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        Long userIdA = (Long) authentication.getPrincipal();
+        User userA = userRepository.findById(userIdA).get();
+        if(!userA.getRole().equals("Administrator")){
+            throw UserException.noPermission();
+        }
+       User user = userRepository.findById(userId).get();
+       user.setRole(role);
+       user.setIsApproved(true);
+       user = userRepository.save(user);
+
+       if(user.getEmail() != null){
+           MailModel mail = new MailModel();
+           mail.setSubject("Your User Account Has Been Approved!");
+           mail.setMessage("<html><head>" +
+                   "<style>" +
+                   "td {\n" +
+                   "    border-radius: 10px;\n" +
+                   "}\n" +
+                   "\n" +
+                   "td a {\n" +
+                   "    padding: 8px 12px;\n" +
+                   "    border: 1px solid #1F83FF;\n" +
+                   "    border-radius: 10px;\n" +
+                   "    font-family: Arial, Helvetica, sans-serif;\n" +
+                   "    font-size: 14px;\n" +
+                   "    color: #ffffff; \n" +
+                   "    text-decoration: none;\n" +
+                   "    font-weight: bold;\n" +
+                   "    display: inline-block;  \n" +
+                   "}"+
+                   "</style>" +
+                   "</head>" +
+                   "<h3>Hello "+user.getFirstName()+"! Your registered account has been verified!</h3>" +
+                   "<p>You have been assign to be <b>"+user.getRole()+"</b>!</p>" +
+                   "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">" +
+                   "  <tr>" +
+                   "      <td>" +
+                   "          <table cellspacing=\"0\" cellpadding=\"0\">" +
+                   "              <tr>" +
+                   "                  <td class=”button” bgcolor=\"#1F83FF\">" +
+                   "                      <a style=\"background-color: #1F83FF; color: white;\"  class=”link” href=\"http://"+url+"/login\" target=\"_blank\">" +
+                   "                          Click Here To Login!            " +
+                   "                      </a>" +
+                   "                  </td>" +
+                   "              </tr>" +
+                   "          </table>" +
+                   "      </td>" +
+                   "  </tr>" +
+                   "</table></html>");
+           mailService.sendEmail(user.getEmail(),mail);
+       }
+
+       return ObjectMapperUtils.map(user, UserInfoModel.class);
+    }
+
+    public void deleteUserById(Long id) throws BaseException {
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+        User user = userRepository.findById(userId).get();
+        if(!user.getRole().equals("Administrator")){
+            throw UserException.noPermission();
+        }
+        Optional<User> opt = userRepository.findById(id);
+        if(opt.isPresent()) {
+
+            List<JobAssessment> jList = jobAssessmentRepository.findByAssessBy(opt.get());
+            for(JobAssessment j : jList){
+                jobAssessmentRepository.delete(j);
+            }
+
+            userRepository.delete(opt.get());
+
+        }else{
+            throw UserException.notFound();
+        }
+
     }
 
     public boolean matchPassword(String rawPassword, String encodedPassword) {

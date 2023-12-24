@@ -10,5 +10,7 @@ public class UserInfoModel {
     public String username;
     public String firstName;
     public String lastName;
+    public String email;
     public String role;
+    public Boolean isApprove;
 }

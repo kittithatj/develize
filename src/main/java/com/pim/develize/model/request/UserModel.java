@@ -14,7 +14,7 @@ public class UserModel {
 
     public String password;
 
+    public String email;
+
     public String role;
-
-
 }

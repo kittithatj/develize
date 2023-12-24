@@ -256,8 +256,8 @@ public class ProjectService {
                 "Description : " +p.getProjectDescription() +"<br>"+
                 "Start : "+startDate + "<br>"+
                 "End : "+endDate + "<br>"+
-                "" +
-                "<h5>This is an automatically generated email – please do not reply to it. If you have any<h5>");
+                //"Assigned By : " +user.getFirstName()+" "+user.getLastName() + "<br>"+
+                "<h5>This is an automatically generated email. please do not reply to it. If you have any question please contact project manager.<h5>");
 
 
         mailService.sendEmail(mailAddress,mail);

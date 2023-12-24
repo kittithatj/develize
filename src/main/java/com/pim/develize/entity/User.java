@@ -28,7 +28,7 @@ public class User {
     @Column(name="password", nullable=false)
     private String password;
 
-    @Column(name="role", nullable=false)
+    @Column(name="role")
     private String role;
 
     @Column(name="email")
@@ -41,4 +41,11 @@ public class User {
     @Column(name = "assessments")
     @JsonIgnoreProperties(value = "assessBy")
     private List<JobAssessment> assessments;
+
+//    public void removeConstrains(User user){
+//        this.assessments.removeAll(user.getAssessments());
+//        for(JobAssessment ja : user.getAssessments()){
+//            ja.getPersonnel().
+//        }
+//    }
 }
