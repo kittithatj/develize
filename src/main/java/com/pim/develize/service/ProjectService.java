@@ -11,7 +11,7 @@ import com.pim.develize.model.request.ProjectCreateModel;
 import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.model.response.ProjectGetEditResponse;
 import com.pim.develize.model.response.ProjectGetResponse;
-aimport com.pim.develize.model.response.ProjectGetShortResponse;
+import com.pim.develize.model.response.ProjectGetShortResponse;
 import com.pim.develize.repository.PersonnelRepository;
 import com.pim.develize.repository.ProjectHistoryRepository;
 import com.pim.develize.repository.ProjectRepository;
