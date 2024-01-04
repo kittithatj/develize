@@ -133,7 +133,7 @@ public class PersonnelService {
         Long userId = (Long) authentication.getPrincipal();
         Optional<User> optU = userRepository.findById(userId);
 
-        List<Personnel> personnelList = personnelRepository.findAll();
+        List<Personnel> personnelList = personnelRepository.findAllByOrderByLastUpdateDesc();
         List<PersonnnelGetResponse> personnelGetList = ObjectMapperUtils.mapAll(personnelList, PersonnnelGetResponse.class);
         personnelGetList.forEach(p -> {
             List<Project> projects = projectRepository.findAllByPersonnelId(p.getPersonnel_id());

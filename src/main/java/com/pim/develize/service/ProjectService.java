@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -52,7 +53,7 @@ public class ProjectService {
     }
 
     public List<ProjectGetResponse> GetProjectList() {
-        List<Project> projects =  projectRepository.findAll();
+        List<Project> projects =  projectRepository.findAllByOrderByLastUpdateDesc();
         List<ProjectGetResponse> projectResponse = ObjectMapperUtils.mapAll(projects, ProjectGetResponse.class);
         projectResponse.forEach(p -> {
             List<Personnel> personnelList = personnelRepository.findByProjectId(p.getProject_id());
@@ -110,6 +111,7 @@ public class ProjectService {
         project.setBudget(params.getBudget());
         project.setStartDate(startDate);
         project.setEndDate(endDate);
+        project.setLastUpdate(new Timestamp(System.currentTimeMillis()));
 
         List<Skill> skillList = new ArrayList<>();
         params.getSkillRequireIdList().forEach(skillId -> {
@@ -183,6 +185,7 @@ public class ProjectService {
         project.setProjectType(params.getProjectType());
         project.setProjectStatus(params.getProjectStatus());
         project.setBudget(params.getBudget());
+        project.setLastUpdate(new Timestamp(System.currentTimeMillis()));
 
         List<Skill> skillList = new ArrayList<>();
         params.getSkillRequireIdList().forEach(skillId -> {

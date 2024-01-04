@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,9 @@ public class Project {
 
     @Column(name = "project_status")
     private String projectStatus;
+
+    @Column(name = "last_update")
+    private Timestamp lastUpdate;
 
     public void removeConstrains(Project project){
         this.skillsRequired.removeAll(project.getSkillsRequired());
