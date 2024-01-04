@@ -11,15 +11,18 @@ import com.pim.develize.model.request.ProjectCreateModel;
 import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.model.response.ProjectGetEditResponse;
 import com.pim.develize.model.response.ProjectGetResponse;
+aimport com.pim.develize.model.response.ProjectGetShortResponse;
 import com.pim.develize.repository.PersonnelRepository;
 import com.pim.develize.repository.ProjectHistoryRepository;
 import com.pim.develize.repository.ProjectRepository;
 import com.pim.develize.repository.SkillRepository;
 import com.pim.develize.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -146,6 +149,9 @@ public class ProjectService {
         List<Personnel> personnelList_ = personnelRepository.findByProjectId(finalProject.getProject_id());
         List<PersonnnelGetResponse> personnels = ObjectMapperUtils.mapAll(personnelList_, PersonnnelGetResponse.class);
         response.setProjectMember(personnels);
+        //async
+
+        sendProjectAssignMail(finalProject);
 
         return response;
     }
@@ -236,30 +242,162 @@ public class ProjectService {
         }
 
     }
-
-    public void sendProjectAssignMail(Project p, String mailAddress){
+    @Async
+    public void sendProjectAssignMail(Project p) throws ParseException {
 
         String[] months = new String[]{
                 "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
         };
 
-        p.getStartDate().getMonth();
+        final Calendar cStart = Calendar.getInstance();
+        final Calendar cEnd = Calendar.getInstance();
+        cStart.setTime(p.getStartDate());
+        cEnd.setTime(p.getEndDate());
 
-        String startDate = p.getStartDate().getDate()+" "+months[p.getStartDate().getMonth()-1]+" "+p.getStartDate().getYear();
-        String endDate = p.getEndDate().getDate()+" "+months[p.getEndDate().getMonth()-1]+" "+p.getEndDate().getYear();
+        String startDateStr = cStart.get(Calendar.DAY_OF_MONTH)+" "+months[cStart.get(Calendar.MONTH)]+" "+cStart.get(Calendar.YEAR);
+        String endDateStr = cEnd.get(Calendar.DAY_OF_MONTH)+" "+months[cEnd.get(Calendar.MONTH)]+" "+cEnd.get(Calendar.YEAR);
 
         MailModel mail = new MailModel();
         mail.setSubject("You have been assigned to Develize project! : "+p.getProjectName());
         mail.setMessage("<h4>We would like to inform you that you have been assigned to project with the information below</h4><br>" +
-                "Project Name : " +p.getProjectName() + "<br>"+
-                "Project Type : " +p.getProjectType() +"<br>"+
-                "Description : " +p.getProjectDescription() +"<br>"+
-                "Start : "+startDate + "<br>"+
-                "End : "+endDate + "<br>"+
+                "<b>Project Name</b> : " +p.getProjectName() + "<br>"+
+                "<b>Project Type</b> : " +p.getProjectType() +"<br>"+
+                "<b>Description</b> : " +p.getProjectDescription() +"<br>"+
+                "<b>Start</b> : "+startDateStr + "<br>"+
+                "<b>End</b> : "+endDateStr + "<br>"+
                 //"Assigned By : " +user.getFirstName()+" "+user.getLastName() + "<br>"+
                 "<h5>This is an automatically generated email. please do not reply to it. If you have any question please contact project manager.<h5>");
+        for(ProjectHistory h : p.getProjectAssignments()){
+            String mailAddress = h.getPersonnel().getEmail();
+            mailService.sendEmail(mailAddress,mail);
+        }
 
+    }
 
-        mailService.sendEmail(mailAddress,mail);
+    public List<PersonnnelGetResponse> matchRequiredSkills(Long projectId, Long memberCount, Boolean ignorePersonnelStatus) throws BaseException {
+        Optional<Project> opt = projectRepository.findById(projectId);
+        if(opt.isEmpty()){
+            throw ProjectException.ProjectNotFound();
+        }
+        Project project = opt.get();
+
+        List<Personnel> personnelList = personnelRepository.findAll();
+
+        personnelList.sort((e1, e2)->{
+            long count1 = e1.getSkills().stream().filter(project.getSkillsRequired()::contains).count();
+            long count2 = e2.getSkills().stream().filter(project.getSkillsRequired()::contains).count();
+            return Long.compare(count2, count1);
+        });
+
+        List<Personnel> matchPersonnelList = new ArrayList<>();
+
+        String statusToCount = "On-going";
+
+        if(!ignorePersonnelStatus){
+            //match the free personnel first
+            for (Personnel personnel : personnelList) {
+                List<ProjectHistory> histories = personnel.getProjectHistories();
+                long count = histories.stream().filter(h->{
+                    return h.getProject().getProjectStatus().equals(statusToCount);
+                }).count();
+                if(count < 1 && memberCount > 0){
+                    matchPersonnelList.add(personnel);
+                    memberCount--;
+                }
+            }
+        }else{
+            for (Personnel personnel : personnelList) {
+                if (memberCount > 0) {
+                    matchPersonnelList.add(personnel);
+                    memberCount--;
+                }
+            }
+        }
+
+        if(!ignorePersonnelStatus && memberCount > 0){
+            for (Personnel personnel : personnelList) {
+                List<ProjectHistory> histories = personnel.getProjectHistories();
+                long count = histories.stream().filter(h->{
+                    return h.getProject().getProjectStatus().equals(statusToCount);
+                }).count();
+                if(count >= 1 && memberCount > 0){
+                    matchPersonnelList.add(personnel);
+                    memberCount--;
+                }
+            }
+        }
+
+        List<PersonnnelGetResponse> response = ObjectMapperUtils.mapAll(matchPersonnelList, PersonnnelGetResponse.class);
+
+        response.forEach(p -> {
+            List<Project> projects = projectRepository.findAllByPersonnelId(p.getPersonnel_id());
+            List<ProjectGetShortResponse> projectGet = ObjectMapperUtils.mapAll(projects, ProjectGetShortResponse.class);
+            p.setProjectHistories(projectGet);
+        });
+
+        return response;
+    }
+
+    public List<PersonnnelGetResponse> matchRequiredSkillsNew(Long[] skillIdList, Long memberCount, Boolean ignorePersonnelStatus) throws BaseException {
+        List<Skill> skillList = new ArrayList<>();
+        Arrays.stream(skillIdList).forEach(id->{
+            skillList.add(skillRepository.findById(id).get());
+        });
+
+        List<Personnel> personnelList = personnelRepository.findAll();
+
+        personnelList.sort((e1, e2)->{
+            long count1 = e1.getSkills().stream().filter(skillList::contains).count();
+            long count2 = e2.getSkills().stream().filter(skillList::contains).count();
+            return Long.compare(count2, count1);
+        });
+
+        List<Personnel> matchPersonnelList = new ArrayList<>();
+
+        String statusToCount = "On-going";
+
+        if(!ignorePersonnelStatus){
+            //match the free personnel first
+            for (Personnel personnel : personnelList) {
+                List<ProjectHistory> histories = personnel.getProjectHistories();
+                long count = histories.stream().filter(h->{
+                    return h.getProject().getProjectStatus().equals(statusToCount);
+                }).count();
+                if(count < 1 && memberCount > 0){
+                    matchPersonnelList.add(personnel);
+                    memberCount--;
+                }
+            }
+        }else{
+            for (Personnel personnel : personnelList) {
+                if (memberCount > 0) {
+                    matchPersonnelList.add(personnel);
+                    memberCount--;
+                }
+            }
+        }
+
+        if(!ignorePersonnelStatus && memberCount > 0){
+            for (Personnel personnel : personnelList) {
+                List<ProjectHistory> histories = personnel.getProjectHistories();
+                long count = histories.stream().filter(h->{
+                    return h.getProject().getProjectStatus().equals(statusToCount);
+                }).count();
+                if(count >= 1 && memberCount > 0){
+                    matchPersonnelList.add(personnel);
+                    memberCount--;
+                }
+            }
+        }
+
+        List<PersonnnelGetResponse> response = ObjectMapperUtils.mapAll(matchPersonnelList, PersonnnelGetResponse.class);
+
+        response.forEach(p -> {
+            List<Project> projects = projectRepository.findAllByPersonnelId(p.getPersonnel_id());
+            List<ProjectGetShortResponse> projectGet = ObjectMapperUtils.mapAll(projects, ProjectGetShortResponse.class);
+            p.setProjectHistories(projectGet);
+        });
+
+        return response;
     }
 }

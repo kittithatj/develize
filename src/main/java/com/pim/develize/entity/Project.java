@@ -43,7 +43,7 @@ public class Project {
     @JsonIgnoreProperties("projects")
     private List<Skill> skillsRequired = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "project_assignments")
     @JsonIgnoreProperties(value = "project")
     private List<ProjectHistory> projectAssignments;

@@ -5,6 +5,7 @@ import com.pim.develize.entity.Skill;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.model.MailModel;
 import com.pim.develize.model.request.UserModel;
+import com.pim.develize.repository.ProjectRepository;
 import com.pim.develize.repository.SkillRepository;
 import com.pim.develize.service.MailService;
 import com.pim.develize.service.ProjectService;
@@ -17,7 +18,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.EnableAsync;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +41,9 @@ public class DevelizeApplication {
     ProjectService projectService;
 
     @Autowired
+    ProjectRepository projectRepository;
+
+    @Autowired
     MailService mailService;
 
     public static void main(String[] args) {
@@ -46,15 +52,9 @@ public class DevelizeApplication {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void initialData() throws BaseException {
-        Project p = new Project();
-        p.setStartDate(new Date(2022,1,20));
-        p.setEndDate(new Date(2022,10,8));
-        MailModel mail = new MailModel();
-//        mail.setMessage("test");
-//        mail.setSubject("kuy");
-//        mailService.sendEmail("nano111atom@gmail.com",mail);
-        projectService.sendProjectAssignMail(p,"nano111atom@gmail.com");
+    public void initialData() throws BaseException, ParseException {
+//        Project p = projectRepository.findById(Long.valueOf(652)).get();
+//        projectService.sendProjectAssignMail(p);
         if(setInit){
             System.out.println("Initial Data Processing...");
             //init Data Here

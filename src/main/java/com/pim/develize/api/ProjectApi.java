@@ -1,8 +1,10 @@
 package com.pim.develize.api;
 
 import com.pim.develize.exception.BaseException;
+import com.pim.develize.model.request.MatchSkillReqModel;
 import com.pim.develize.model.request.ProjectCreateModel;
 import com.pim.develize.model.request.SkillModel;
+import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.model.response.ProjectGetEditResponse;
 import com.pim.develize.model.response.ProjectGetResponse;
 import com.pim.develize.repository.PersonnelRepository;
@@ -56,6 +58,18 @@ public class ProjectApi {
     public ResponseEntity<String> DeleteProject(@PathVariable("id") Long id) throws BaseException{
         projectService.deleteProjectById(id);
         return ResponseEntity.ok("Delete Project Successfully");
+    }
+
+    @GetMapping("/{id}/match-skill/{count}/{ignorePS}")
+    public ResponseEntity<List<PersonnnelGetResponse>> matchRequiredSkills(@PathVariable("id") Long id,@PathVariable("count") Long count,@PathVariable("ignorePS") Boolean ignorePS) throws BaseException {
+        List<PersonnnelGetResponse> res = projectService.matchRequiredSkills(id,count,ignorePS);
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/match-skill")
+    public ResponseEntity<List<PersonnnelGetResponse>> matchRequiredSkills(@RequestBody MatchSkillReqModel params) throws BaseException {
+        List<PersonnnelGetResponse> res = projectService.matchRequiredSkillsNew(params.getSkillIdList(),params.getMemberCount(),params.getIgnorePS());
+        return ResponseEntity.ok(res);
     }
 
 }

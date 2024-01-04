@@ -136,11 +136,8 @@ public class PersonnelService {
         List<Personnel> personnelList = personnelRepository.findAll();
         List<PersonnnelGetResponse> personnelGetList = ObjectMapperUtils.mapAll(personnelList, PersonnnelGetResponse.class);
         personnelGetList.forEach(p -> {
-            List<Skill> skills = skillRepository.findAllByPersonnelsPersonnel_id(p.getPersonnel_id());
-            List<SkillGetResponse> skillGet = ObjectMapperUtils.mapAll(skills, SkillGetResponse.class);
             List<Project> projects = projectRepository.findAllByPersonnelId(p.getPersonnel_id());
             List<ProjectGetShortResponse> projectGet = ObjectMapperUtils.mapAll(projects, ProjectGetShortResponse.class);
-            p.setSkills(skillGet);
             p.setProjectHistories(projectGet);
             Boolean hasAssessed = jobAssessmentService.checkIfAssessed(optU.get(), p.getPersonnel_id());
             p.setHasAssessed(hasAssessed);
