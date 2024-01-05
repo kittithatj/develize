@@ -133,14 +133,11 @@ public class PersonnelService {
         Long userId = (Long) authentication.getPrincipal();
         Optional<User> optU = userRepository.findById(userId);
 
-        List<Personnel> personnelList = personnelRepository.findAll();
+        List<Personnel> personnelList = personnelRepository.findAllByOrderByLastUpdateDesc();
         List<PersonnnelGetResponse> personnelGetList = ObjectMapperUtils.mapAll(personnelList, PersonnnelGetResponse.class);
         personnelGetList.forEach(p -> {
-            List<Skill> skills = skillRepository.findAllByPersonnelsPersonnel_id(p.getPersonnel_id());
-            List<SkillGetResponse> skillGet = ObjectMapperUtils.mapAll(skills, SkillGetResponse.class);
             List<Project> projects = projectRepository.findAllByPersonnelId(p.getPersonnel_id());
             List<ProjectGetShortResponse> projectGet = ObjectMapperUtils.mapAll(projects, ProjectGetShortResponse.class);
-            p.setSkills(skillGet);
             p.setProjectHistories(projectGet);
             Boolean hasAssessed = jobAssessmentService.checkIfAssessed(optU.get(), p.getPersonnel_id());
             p.setHasAssessed(hasAssessed);

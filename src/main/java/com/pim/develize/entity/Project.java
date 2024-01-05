@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class Project {
     @JsonIgnoreProperties("projects")
     private List<Skill> skillsRequired = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "project_assignments")
     @JsonIgnoreProperties(value = "project")
     private List<ProjectHistory> projectAssignments;
@@ -53,6 +54,9 @@ public class Project {
 
     @Column(name = "project_status")
     private String projectStatus;
+
+    @Column(name = "last_update")
+    private Timestamp lastUpdate;
 
     public void removeConstrains(Project project){
         this.skillsRequired.removeAll(project.getSkillsRequired());

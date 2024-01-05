@@ -15,4 +15,6 @@ public interface ProjectRepository extends CrudRepository<Project, Long> {
     public List<Project> findAllByPersonnelId(Long personnel_id);
 
     public List<Project> findAll();
+
+    public List<Project> findAllByOrderByLastUpdateDesc();
 }
