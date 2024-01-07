@@ -1,7 +1,5 @@
 package com.pim.develize.service;
 
-import com.pim.develize.entity.Personnel;
-import com.pim.develize.entity.Project;
 import com.pim.develize.entity.Skill;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.exception.SkillException;
@@ -11,8 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
 
 @Service
 public class SkillService {

@@ -13,7 +13,6 @@ import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.service.JobAssessmentService;
 import com.pim.develize.service.PersonnelService;
 import com.pim.develize.util.ObjectMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
