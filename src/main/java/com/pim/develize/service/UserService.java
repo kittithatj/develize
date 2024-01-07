@@ -1,17 +1,15 @@
 package com.pim.develize.service;
 
 import com.pim.develize.entity.JobAssessment;
-import com.pim.develize.entity.Project;
-import com.pim.develize.entity.ProjectHistory;
 import com.pim.develize.entity.User;
 import com.pim.develize.exception.BaseException;
-import com.pim.develize.exception.ProjectException;
 import com.pim.develize.exception.UserException;
 import com.pim.develize.model.MailModel;
 import com.pim.develize.model.request.UserInfoModel;
 import com.pim.develize.model.request.UserLoginModel;
 import com.pim.develize.model.request.UserLoginResponseModel;
 import com.pim.develize.model.request.UserModel;
+import com.pim.develize.model.response.UserListResponse;
 import com.pim.develize.repository.JobAssessmentRepository;
 import com.pim.develize.repository.UserRepository;
 import com.pim.develize.util.ObjectMapperUtils;
@@ -46,18 +44,26 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<UserInfoModel> getAllUsers(){
-        List<User> users = userRepository.findAll();
-        List<UserInfoModel> usersInfo = ObjectMapperUtils.mapAll(users, UserInfoModel.class);
-        List<Boolean> isApproveList = new ArrayList<>();
-        users.forEach(u->{
-            isApproveList.add(u.getIsApproved());
-        });
-        for (int i = 0; i < isApproveList.size(); i++) {
-            usersInfo.get(i).setIsApprove(isApproveList.get(i));
+    public UserListResponse getAllUsers() throws UserException {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        Long userIdA = (Long) authentication.getPrincipal();
+        User userA = userRepository.findById(userIdA).get();
+        if(!userA.getRole().equals("Administrator")){
+            throw UserException.noPermission();
         }
 
-        return usersInfo;
+        List<User> usersA = userRepository.findAllByIsApproved(true);
+        List<UserInfoModel> usersAres = ObjectMapperUtils.mapAll(usersA, UserInfoModel.class);
+
+        List<User> usersB = userRepository.findAllByIsApproved(false);
+        List<UserInfoModel> usersBres = ObjectMapperUtils.mapAll(usersB, UserInfoModel.class);
+
+        UserListResponse userList = new UserListResponse();
+        userList.setApproved(usersAres);
+        userList.setNotApproved(usersBres);
+
+        return userList;
     }
 
     public UserInfoModel createUser(UserModel user) throws BaseException{
@@ -72,14 +78,31 @@ public class UserService {
             entity.setEmail(user.email);
             entity.setIsApproved(false);
             entity.setRole("Not-Assigned");
-            if((user.getRole() != null) && user.getRole().equals("Administrator")){
-                entity.setIsApproved(true);
-            }
             entity = userRepository.save(entity);
             UserInfoModel res = ObjectMapperUtils.map(entity, UserInfoModel.class);
-            res.setIsApprove(false);
+            res.setIsApproved(false);
             return res;
         }
+    }
+
+    public UserInfoModel editUser(UserInfoModel input) throws UserException {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        Long userIdA = (Long) authentication.getPrincipal();
+        User userA = userRepository.findById(userIdA).get();
+        if(!userA.getRole().equals("Administrator")){
+            throw UserException.noPermission();
+        }
+
+        User user = userRepository.findById(input.user_id).get();
+        user.setFirstName(input.firstName);
+        user.setLastName(input.lastName);
+        user.setUsername(input.username);
+        user.setEmail(input.email);
+        user.setRole(input.role);
+        user.setIsApproved(input.isApproved);
+        user = userRepository.save(user);
+        return ObjectMapperUtils.map(user, UserInfoModel.class);
     }
 
     public UserInfoModel assignRole(Long userId, String role) throws UserException {
@@ -171,12 +194,13 @@ public class UserService {
 
     public UserLoginResponseModel login(UserLoginModel userLoginModel) throws BaseException {
         Optional<User> user = userRepository.findByUsername(userLoginModel.username.toLowerCase());
-        if(!user.isPresent()){
+        if(user.isEmpty()){
             throw UserException.loginFailed();
         }
-//        if(user.get().getPassword().equals(userLoginModel.getPassword())){
-//            return tokenService.tokenize(user.get());
-//        }
+        if(!user.get().getIsApproved()){
+            throw UserException.loginFailed();
+        }
+
         if(this.matchPassword(userLoginModel.getPassword(),user.get().getPassword())){
             UserLoginResponseModel userResponse = new UserLoginResponseModel();
             userResponse.firstName = user.get().getFirstName();

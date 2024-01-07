@@ -9,7 +9,6 @@ import com.pim.develize.model.response.ProjectGetShortResponse;
 import com.pim.develize.model.response.SkillGetResponse;
 import com.pim.develize.repository.*;
 import com.pim.develize.util.ObjectMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;

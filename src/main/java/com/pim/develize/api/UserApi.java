@@ -2,12 +2,10 @@ package com.pim.develize.api;
 
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.model.request.*;
+import com.pim.develize.model.response.UserListResponse;
 import com.pim.develize.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -30,7 +28,7 @@ public class UserApi {
     }
 
     @GetMapping("/get-list")
-    public List<UserInfoModel> getAllUser() {
+    public UserListResponse getAllUser() throws BaseException {
         return userService.getAllUsers();
     }
 
@@ -49,6 +47,12 @@ public class UserApi {
     @PutMapping("/approve")
     public ResponseEntity<UserInfoModel> approveUser(@RequestBody ApproveUserModel user) throws BaseException {
         UserInfoModel res = userService.assignRole(user.getUserId(), user.getRole());
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity<UserInfoModel> approveUser(@RequestBody UserInfoModel user) throws BaseException {
+        UserInfoModel res = userService.editUser(user);
         return ResponseEntity.ok(res);
     }
 }

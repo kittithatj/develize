@@ -2,11 +2,9 @@ package com.pim.develize.service;
 
 import com.pim.develize.entity.*;
 import com.pim.develize.exception.BaseException;
-import com.pim.develize.exception.PersonnelException;
 import com.pim.develize.exception.ProjectException;
 import com.pim.develize.model.MailModel;
 import com.pim.develize.model.request.PersonnelAssignHistory;
-import com.pim.develize.model.request.PersonnelModel;
 import com.pim.develize.model.request.ProjectCreateModel;
 import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.model.response.ProjectGetEditResponse;
@@ -17,14 +15,11 @@ import com.pim.develize.repository.ProjectHistoryRepository;
 import com.pim.develize.repository.ProjectRepository;
 import com.pim.develize.repository.SkillRepository;
 import com.pim.develize.util.ObjectMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;

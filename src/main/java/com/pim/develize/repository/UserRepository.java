@@ -13,4 +13,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     public List<User> findAll();
 
+    public List<User> findAllByIsApproved(Boolean isApproved);
+
 }

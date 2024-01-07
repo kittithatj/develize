@@ -3,15 +3,10 @@ package com.pim.develize.api;
 import com.pim.develize.exception.BaseException;
 import com.pim.develize.model.request.MatchSkillReqModel;
 import com.pim.develize.model.request.ProjectCreateModel;
-import com.pim.develize.model.request.SkillModel;
 import com.pim.develize.model.response.PersonnnelGetResponse;
 import com.pim.develize.model.response.ProjectGetEditResponse;
 import com.pim.develize.model.response.ProjectGetResponse;
-import com.pim.develize.repository.PersonnelRepository;
-import com.pim.develize.repository.ProjectRepository;
-import com.pim.develize.repository.SkillRepository;
 import com.pim.develize.service.ProjectService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,20 +50,20 @@ public class ProjectApi {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> DeleteProject(@PathVariable("id") Long id) throws BaseException{
+    public ResponseEntity<String> DeleteProject(@PathVariable("id") Long id) throws BaseException {
         projectService.deleteProjectById(id);
         return ResponseEntity.ok("Delete Project Successfully");
     }
 
     @GetMapping("/{id}/match-skill/{count}/{ignorePS}")
-    public ResponseEntity<List<PersonnnelGetResponse>> matchRequiredSkills(@PathVariable("id") Long id,@PathVariable("count") Long count,@PathVariable("ignorePS") Boolean ignorePS) throws BaseException {
-        List<PersonnnelGetResponse> res = projectService.matchRequiredSkills(id,count,ignorePS);
+    public ResponseEntity<List<PersonnnelGetResponse>> matchRequiredSkills(@PathVariable("id") Long id, @PathVariable("count") Long count, @PathVariable("ignorePS") Boolean ignorePS) throws BaseException {
+        List<PersonnnelGetResponse> res = projectService.matchRequiredSkills(id, count, ignorePS);
         return ResponseEntity.ok(res);
     }
 
     @PostMapping("/match-skill")
     public ResponseEntity<List<PersonnnelGetResponse>> matchRequiredSkills(@RequestBody MatchSkillReqModel params) throws BaseException {
-        List<PersonnnelGetResponse> res = projectService.matchRequiredSkillsNew(params.getSkillIdList(),params.getMemberCount(),params.getIgnorePS());
+        List<PersonnnelGetResponse> res = projectService.matchRequiredSkillsNew(params.getSkillIdList(), params.getMemberCount(), params.getIgnorePS());
         return ResponseEntity.ok(res);
     }
 
