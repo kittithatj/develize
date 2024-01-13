@@ -100,8 +100,9 @@ public class JobAssessmentService {
         Optional<JobAssessment> userScore = jobAssessmentRepository.findByAssessByAndPersonnel(user,personnel);
         List<JobAssessment> scoreList = jobAssessmentRepository.findAllByPersonnel(personnel);
 
-        AssessmentGetResponse overviewScore = new AssessmentGetResponse();
+        AssessmentGetResponse overviewScore;
         if(scoreList.size()>0){
+            overviewScore = new AssessmentGetResponse();
             scoreList.forEach(j -> {
                 overviewScore.attendance += j.getAttendance();
                 overviewScore.jobPerformance += j.getJobPerformance();
@@ -119,16 +120,20 @@ public class JobAssessmentService {
             overviewScore.deliverableQuality = overviewScore.deliverableQuality/scoreList.size();
             overviewScore.innovation = overviewScore.innovation/scoreList.size();
             overviewScore.teamwork = overviewScore.teamwork/scoreList.size();
+        }else{
+            overviewScore = null;
         }
 
-        if(userScore.isEmpty() && (scoreList.size() == 0)){
-            throw PersonnelException.assessNotFound();
-        }
+//        if(userScore.isEmpty() && (scoreList.size() == 0)){
+//            throw PersonnelException.assessNotFound();
+//        }
         AssessmentGetResponse userScoreRes = null;
         if(userScore.isPresent()){
              userScoreRes = ObjectMapperUtils.map(userScore.get(),AssessmentGetResponse.class);
         }
         AssessmentOverviewResponse res = new AssessmentOverviewResponse();
+        res.setPersonnel_id(personnel.getPersonnel_id());
+        res.setFullName(personnel.getFirstName()+" "+personnel.getLastName());
         res.setUserScore(userScoreRes);
         res.setOverviewScore(overviewScore);
 
